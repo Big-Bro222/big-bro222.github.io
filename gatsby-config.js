@@ -11,7 +11,7 @@ module.exports = {
     siteTitle: `BigBro222's Blog`,
     siteTitleAlt: `BigBro222's Blog `,
     siteHeadline: `BigBro222's Blog `,
-    siteUrl: `https://minimal-blog.lekoarts.de`,
+    siteUrl: `https://big-bro222.github.io/`,
     siteDescription: `Personal site for Ze Qi`,
     siteLanguage: `en`,
     siteImage: `/banner.jpg`,
@@ -29,17 +29,17 @@ module.exports = {
           },
           {
             title: `About`,
-            slug: `/about`,
+            slug: `/holopiano`,
           },
         ],
         externalLinks: [
           {
-            name: `Twitter`,
-            url: `https://twitter.com/lekoarts_de`,
+            name: `LinkedIn`,
+            url:  `https://www.linkedin.com/in/ze-qi/`,
           },
           {
-            name: `Homepage`,
-            url: `https://www.lekoarts.de?utm_source=minimal-blog&utm_medium=Starter`,
+            name: `GitHub`,
+            url:  `https://github.com/Big-Bro222`,
           },
         ],
       },

@@ -1,0 +1,69 @@
+---
+title: "A discussion for text size in HoloLens(Unity3D)"
+date: 2022-05-07
+slug: "/text-size-hololens"
+tags:
+  - XR technology
+---
+
+During the quarantine,  I cannot test my HoloLens projects with my supervisor on site. So we had to use Videos to communicate with each other. Due to the low quality of the Video recording by HoloLens(HoloLens1 at that time) built-in camera, some time is hard to distinguish the text in Video demos even though I can see it clearly through HoloLens.This intrigues me to do a little experiment on what size is appropriate for both HoloLens and Video demonstration.
+
+Conclusion first:
+
+- In HoloLens:  `Fontsize * scale in Unity/0.005= 34.63-74.2 pt`
+- In Video recording: `Fontsize * scale in Unity/0.005 > 70pt`
+
+This conclusion is based on Unity 3D Textmesh, I utilized this because it's basically the best choice regarding 3D typography in Unity. If you are using Textmesh UI or 3D text, please use a 3D Textmesh as a reference. The following is how I get this conclusion.
+
+# 1. Comfort distance & comfort font size in HoloLens
+
+> *“Most visual designers use points to define font sizes in the real world. There are about 2835 (2,834.645666399962) points in 1 meter. Based on the point system conversion to 1 meter and Unity's default Text Mesh font size of 13, the simple math of 13 divided by 2835 equals 0.0046 (0.004586111116 to be exact) which provides a good standard scale to start with (some may wish to round to 0.005). Scaling the text object or container to these values will not only allow for the 1:1 conversion of font sizes in a design program, but also provides a standard so you can maintain consistency throughout your experience.”*
+> 
+
+This is the description of text size calculation in Unity compared to real-world font size. In short, if you rescale [the 3D Text Mesh](https://docs.unity3d.com/Manual/class-TextMesh.html) to 0.005, font size 13 represents 13pt in the real world.
+
+The following shows that the conclusion of minimum font size and comfortable font size inside HoloLens is based on a human’s comfortable viewing angle (visual acuity).
+
+![Figure1 Font Size in HoloLens](./Font_size_HoloLens.png)
+
+Figure1 Font Size in HoloLens
+
+# 2. Comfort font size in HoloLens video recording
+
+As I said before, the problem we had was that the video recorded by HoloLens camera has a fairly low resolution. So I built a quick demo and showed it to my participants to get feedback about what's a good font size for demonstration purposes. The observing distance was set to 1.5meters as the Microsoft Design guidelines suggested.
+
+![Figure2 Optimal distance for placing holograms from the user](./Hololens_distance.png)
+
+Figure2 Optimal distance for placing holograms from the user
+
+![Figure3 Text size demo](./Text_size.gif)
+
+Figure3 Text size demo
+
+The scale in Unity was set to 0.01, so according to the formula I said at the beginning, the final text size result has to be multiplied by 2.
+
+# 3. Results
+
+I send this video and a Survey to twelve participants to gather feedback. The age range is from 18 to 42, and the result is shown in Figure4 where each row represents one individual.
+
+![Figure4 Text Size Survey](./TextSize_Survey.png)
+
+Figure4 Text Size Survey
+
+# 4. Words in the end
+
+The whole article is not a scientific report, it's more like an experience sharing. This is only the beginning, I didn’t set up the background color, and also text legibility depends on a variety of factors including various display properties (for example, pixel density, brightness, contrast), lens properties (for example, chromatic aberration), and text/font properties (for example, the specific font characteristics like weight, spacing, serifs, etc., the color of font, the color of the background). Last but not the least, there are clearly differences related to the user's physical condition.
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+# Reference
+
+[Text in unity](https://docs.microsoft.com/en-us/windows/mixed-reality/text-in-unity)
+
+[HoloLens comfort artible](https://docs.microsoft.com/en-us/windows/mixed-reality/comfort) 
+
+[Mixed-reality typography](https://docs.microsoft.com/en-us/windows/mixed-reality/typography)
