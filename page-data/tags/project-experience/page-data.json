@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/project-experience",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/masterthesis/1","title":"Master Thesis (Part 1) Design Space initial implementation","date":"07.05.2022","excerpt":"","timeToRead":1,"description":null,"tags":[{"name":"Project experience","slug":"project-experience"}]}]}},"pageContext":{"slug":"project-experience","name":"Project experience","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
