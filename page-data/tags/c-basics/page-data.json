@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/c-basics",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/collection-csharp-basic/1","title":"Collections in C# (The basics 1)","date":"07.05.2022","excerpt":"1. What is collections There are usually three default namespaces when creating a new C# script in Unity, they are Of Course, you can change…","timeToRead":5,"description":null,"tags":[{"name":"C# basics","slug":"c-basics"}]}]}},"pageContext":{"slug":"c-basics","name":"C# basics","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
