@@ -24,7 +24,7 @@ export default class HoloPiano extends Component {
         <div id="Home"></div>
         <div className="Content">
           <div className="section  ">
-            <h1 className="title">—— Design Diagram ——</h1>
+            <h1 className="title">Design Diagram</h1>
             <p className="description">
               Our goal is to build a Mixed-Reality application to enhance the
               piano learning experience, both remotely and collaboratively . By
@@ -57,7 +57,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section ">
-            <h1 className="title">—— Storyboard ——</h1>
+            <h1 className="title">Storyboard</h1>
 
             <img
               src={StoryboardUrl}
@@ -68,7 +68,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— Prototyping ——</h1>
+            <h1 className="title">Prototyping</h1>
             <p className="description">
               Prototyping for XR applications is different from prototyping for
               web or mobile applications. There is no standard way to build a
@@ -107,7 +107,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— Technological discussion ——</h1>
+            <h1 className="title">Technological discussion</h1>
             <p className="description">
               At first, we decided to use the Live stream and Leap motion to
               implement the teaching function. However we found out that Leap
@@ -130,7 +130,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— Final system Diagram ——</h1>
+            <h1 className="title">Final system Diagram</h1>
             <div className="singlewrapper">
               <img
                 src={SystemdiagramUrl}
@@ -142,12 +142,12 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— UI Design ——</h1>
+            <h1 className="title">UI Design</h1>
             <img src={UIUrl} className="WideImage" alt="UIUrl"></img>
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— User testing&iteration ——</h1>
+            <h1 className="title">User testing&iteration</h1>
             <p className="description">
               We are fortunate enough to get our design tested by others at the
               exhibition and get valuable feedbacks. Based on those feedbacks,
@@ -179,7 +179,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title">—— Final Output ——</h1>
+            <h1 className="title">Final Output</h1>
 
             <div className="singlewrapper">
               <img src={MenuUrl} className="WideImage" alt="Menu"></img>
@@ -206,7 +206,7 @@ export default class HoloPiano extends Component {
           </div>
 
           <div className="section  ">
-            <h1 className="title"> —— Self-reflection ——</h1>
+            <h1 className="title">Self-reflection</h1>
             <p className="description">
               This is a really unique experience designing for HoloLens. There
               is no standard progress or theory for design for MR application.

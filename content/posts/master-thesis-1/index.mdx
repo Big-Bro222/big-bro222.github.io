@@ -1,8 +1,180 @@
 ---
-title: "Master Thesis (Part 1) Design Space initial implementation"
-date: 2022-05-07
-slug: "/masterthesis/1"
+title: "Master Thesis (Part 1)"
+date: 2020-04-21
+slug: "/blog/masterthesis/1"
 tags:
   - Project experience
+  - AR/VR
 ---
 
+### (Design Space initial implementation)
+
+Augmented Reality that allows us to superimpose information on shared external displays. The primary goal of my master thesis is to identify challenges in placing and understanding information in immersive visual analytics, in particular combining AR with external displays. At the first month of my internship, we built several **Mixed reality Visualization prototypes** to explore the design space. Below are our showcase of different visualization technics.
+
+# 1. Map visualization
+
+First type of visualization is the Map visualization. We encoded the data of the location of Paris metro system to a Map with Nodes showing the location of the stations. We built Taglong style panel for general information and labels always facing the user. And we also built a label for the sub-Visualization(label for a single metro line)One problem I was facing was that the size of each node is hard to control, this lead to difficulties focusing on a single node. I used a technology called bubble cursor which can increase the efficiency of hightlighting small objects. Instead of using the Camera system built in MRTK2, I build a stand alone camera system that supports [RaycastAll( )](https://docs.unity3d.com/ScriptReference/Physics.RaycastAll.html) method.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/MapVisualization.8a194457.gif" width = "100%" alt="MapVisualization.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 MapVisualization
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/bubble_cursor.63c9f289.gif" width = "100%" alt="bubble_cursor.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 2 Classic bubble cursor
+  	</div>
+</left>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./BubbleCursorMap.png" width = "60%" alt="BubbleCursorMap.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 3 How bubble cursor works in the Map visualization
+  	</div>
+</left>
+
+# 2. BarChart
+
+The dataset for the MR barchart examples is the number of incident by year and type. At first I designed a 3D barchart which shows being more delightful in our discussion. This inspired us to come up with a new design which gives the BarChart a third dimension encoding. We call it Drawer BarChart.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/Simple%20barChart.4a746c76.gif" width = "100%" alt="Simple_barChart.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 4 Simple BarChart
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/BarChartAnimation2.c107ef30.gif" width = "100%" alt="BarChartAnimation2.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 5 3D Drawer BarChart
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/BarChartAnimation3.d2e86eec.gif" width = "100%" alt="BarChartAnimation3.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 6 Drawer with handler
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/3DLense.91dacc38.gif" width = "100%" alt="3DLense.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 7 3DLense
+  	</div>
+</left>
+
+
+# 3. ScatterPlot
+
+Both three types of 3D scatterPlot design is based on the Nutrition ingrediants of different types of cereal. The three dimensions are Protein,fat and sugar. Also I encoded color message represents calori level.The 3D Scatter Plot and the 3D ScatterPlot filter are using side view to represent different 2D information. The Scatter Dice, on the other hand,uses the transition animation to show the sense of 3D.One interesting point when I deal with the 3D scatterplot is that because the depth of different cluster, it’s difficult to local your focus on a particular data point. Instead of using bubble cursor as in map visualization, the user should focus on the same point for at leaset 0.2 second for the visualization to change the focus object. Another solution is as implemented in Scatter Plot Filter, use a filter to better explore the data.
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/scatterplot.7897e832.gif" width = "100%" alt="scatterplot.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 8 3D Scatter Plot
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/ScatterDice.f2130500.gif" width = "100%" alt="ScatterDice.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 9 Scatter Dice
+  	</div>
+</left>
+
+
+# 4. Lenses
+
+The purpose of a lense is to show different content on a different layer.We havee explored three kinds of Lenses
+
+- 3DLense: the 3DLense is used to explore a 3D content on the top of Map visualization.This can be intuitive interaction regarding to Map exploring.
+- Magnigication Lense: this is a Magnigicant Lense to explore detailed content
+- Pyrimad Lense(Manhattan Lense): this is a Lense based on Magnigication Lense. The advantages of this kind of design is can also explore the hirearchy of different magnigicat level.
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/3DLense.91dacc38.gif" width = "100%" alt="3DLense.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 10 3D Lense
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/Magnifier%20Lense.2d4153e1.gif" width = "100%" alt="Magnifier_Lense.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 11 Magnifier Lense
+  	</div>
+</left>
+
+
+<br />
+<br />
+<br />
+<br />
+<br />
+
+# Reference
+
+Bubble cursor :[The bubble cursor: enhancing target acquisition by dynamic resizing of the cursor's activation area](https://dl.acm.org/doi/abs/10.1145/1054972.1055012)
+
+Pyrimad lense :[The DragMag image magnifier](https://www.researchgate.net/publication/221516261_The_DragMag_image_magnifier)
+
+Google Slides for discussion about the design space : [https://docs.google.com/presentation/d/1CztHqgtRfOsDR7ku59sx09mgsfRWc0MoBbd9Xu719NI/edit?usp=sharing](https://docs.google.com/presentation/d/1CztHqgtRfOsDR7ku59sx09mgsfRWc0MoBbd9Xu719NI/edit?usp=sharing)
+
+Unity RaycastAll method : [https://docs.unity3d.com/ScriptReference/Physics.RaycastAll.html](https://docs.unity3d.com/ScriptReference/Physics.RaycastAll.html)

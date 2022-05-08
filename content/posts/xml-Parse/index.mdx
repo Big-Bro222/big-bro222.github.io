@@ -1,339 +1,98 @@
 ---
 title: "How to read an xml file in HoloLens?"
-date: 2022-05-07
-slug: "/xml-parse"
+date: 2020-04-12
+slug: "/blog/xml-parse"
 tags:
   - C# basics
 ---
 
-# 1. What is collections
-
-There are usually three default namespaces when creating a new C# script in Unity, they are
-
-``` csharp
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-```
-
-Of Course, you can change the default scripts using [this method](https://www.notion.so/Changing-Default-Scripts-in-Unity-6952f533e80a4ab780546c472dc9af4c). But still, it’s easy to see that collection is a very important concept in programming, especially C#.
-
-According to [Microsoft coding guide](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections) _Collections provide a more flexible way to work with groups of objects. Unlike arrays, the group of objects you work with can **grow and shrink dynamically** as the needs of the application change._
-
-The System.Collection namespace contains interfaces and classes that define various collections of objects, such as lists, queues, bit arrays, hash tables, and dictionaries.
-
-The **System.Collection.Generic** namespace contains interfaces and classes that define generic collections, which allow users to create strongly typed collections that provide **better type safety and performance** than non-generic strongly typed collections.
-
-# 2. System.Collection.Generic
-
-If your collection contains elements of only **one data type**, you can use one of the classes in the [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace. _A generic collection enforces type safety so that no other data type can be added to it. When you retrieve an element from a generic collection, you do not have to determine its data type or convert it._
-
-There are 9 basic classes:
-
-1. Dictionary<TKey,TValue\>
-2. SortedDictionary<TKey,TValue\>
-3. SortedList<TKey,TValue\>
-4. List<T\>
-5. LinkedList<T\>
-6. HashSet<T\>
-7. SortedSet<T\>
-8. Stack<T\>
-9. Queue<T\>
-
-## 2.1 Collections with<key, value> pair
-
-### 2.1.1 [Dictionary<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0)
-
-Dictionary is a very common data structure to access each element, it is a generic collection that stores key-value pairs in no particular order. It always takes the same time no matter how many elements is stored with an [internal mechanism](https://www.cnblogs.com/incerry/p/10325290.html) of Hashtable.
-
-**pros:** take the same time to query, add, remove an element no matter how many elements are stored
-
-**cons:** dictionary has no particular order, so it will take time to iterate through the dictionary
-
-```csharp
-// Create a new dictionary of strings, with string keys.
-Dictionary<string, string> openWith =
-    new Dictionary<string, string>();
-// Add some elements to the dictionary. There are no
-// duplicate keys, but some of the values are duplicates.
-openWith.Add("txt", "notepad.exe");
-// The indexer can be used to change the value associated
-// with a key.If a key does not exist, setting the indexer for that key
-// adds a new key/value pair.
-openWith["rtf"] = "winword.exe";
-Console.WriteLine("For key = \"rtf\", value = {0}.",
-    openWith["rtf"]);
-
-// The indexer throws an exception if the requested key is
-// not in the dictionary.
-catch (KeyNotFoundException)
-{
-    Console.WriteLine("Key = \"tif\" is not found.");
-}
-// When a program often has to try keys that turn out not to
-// be in the dictionary, TryGetValue can be a more efficient
-// way to retrieve values.
-string value = "";
-openWith.TryGetValue("tif", out value)
-
-// ContainsKey can be used to test keys before inserting
-// them.
-openWith.ContainsKey("ht"))
-// When you use foreach to enumerate dictionary elements,
-// the elements are retrieved as KeyValuePair objects.
-foreach( KeyValuePair<string, string> kvp in openWith )
-{
-    Console.WriteLine("Key = {0}, Value = {1}",
-        kvp.Key, kvp.Value);
-}
-
-// To get the values alone, use the Values property.
-Dictionary<string, string>.ValueCollection valueColl =
-// To get the keys alone, use the Keys property.
-Dictionary<string, string>.KeyCollection keyColl =
-    openWith.Keys;
-
-// Use the Remove method to remove a key/value pair.
-openWith.Remove("doc");
-```
-
-### 2.1.2 SortedDictionary<TKey,TValue>
-
-The usage of SortedDictionary is quite similar to Dictionary although it’s implemented using 
-binary-tree.It has O(log n) retrieval.While using foreach loop, the output will be ordered 
-by key values in ascending order（on the other hand, dictionary will be ordered by the time 
-the keyvalue pair is added）
-
-note that TKey must implement **IComparable<TKey\>** interface in order to be sorted.（I haven’t find any useful scenario for using SortedDictionary yet, except for that the unique performance while doing foreach loop）
-
-```csharp
-SortedDictionary<int, string> sd = new SortedDictionary<int, string>();
-        sd.Add(9, "九");
-        sd.Add(8, "八");
-        sd.Add(7, "七");
-        sd.Add(6, "六");
-        sd.Add(1, "一");
-        sd.Add(5, "五");
-        sd.Add(3, "三");
-        sd.Add(2, "二");
-        Debug.Log("-----SortDictionary-----");
-        //print the dictionary
-        foreach (var item in sd)
-        {
-            string info = string.Format(" Key = {0}, Value = {1}", item.Key, item.Value);
-            Debug.Log(info);
-        }
-
-//foreach loop with print from key 1 to key 9
-```
-
-### 2.1.3 SortedList<Tkey,TValue>
-
-The [SortedList<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedlist-2?view=net-6.0) generic class is an array of key/value pairs with O(log `n`) retrieval, where n is the number of elements in the dictionary. In this, it is similar to the [SortedDictionary<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2?view=net-6.0) generic class. The two classes have similar object models, and both have O(log `n`) retrieval. Where the two classes differ is in memory use and speed of insertion and removal:
-
-- **SortedList<TKey,TValue> uses less memory**.
-- **SortedDictionary<TKey,TValue> has faster insertion and removal operations** for unsorted data, O(log `n`) as opposed to O(`n`) for [SortedList<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedlist-2?view=net-6.0).
-- If the list is populated all at once from sorted data, [SortedList<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedlist-2?view=net-6.0) is faster than [SortedDictionary<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2?view=net-6.0).
-
-Another difference is that [SortedList<TKey,TValue>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedlist-2?view=net-6.0) supports get values and keys **by index**
-
-```csharp
-
-        // Create a new sorted list of strings, with string
-        // keys.
-        SortedList<string, string> openWith =
-            new SortedList<string, string>();
-
-        // Add some elements to the list. There are no
-        // duplicate keys, but some of the values are duplicates.
-        openWith.Add("txt", "notepad.exe");
-        openWith.Add("bmp", "paint.exe");
-
-        // ContainsKey can be used to test keys before inserting
-        // them.
-        openWith.ContainsKey("ht")
-
-        // To get the values alone, use the Values property.
-        IList<string> ilistValues = openWith.Values;
-        // To get the keys alone, use the Keys property.
-        IList<string> ilistKeys = openWith.Keys;
-
-        // Use the Remove method to remove a key/value pair.
-        Console.WriteLine("\nRemove(\"doc\")");
-        openWith.Remove("doc");
-
-        //get the index of a key
-        Debug.Log("Key 7 is has the index of"+sd.IndexOfKey(7));
-        //remove the item with biggest key
-        openWith.RemoveAt(sd.Count - 1);
-
-        //get value by index
-        string value=(openWith.Values)[3];
-        Debug.Log("the forth value is " + value);
-
-```
-
-### 2.2.1 [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0)
-
-Represents a strongly typed list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.
-
-The [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) class is the generic equivalent of the ArrayList class. It implements the IList<T\> generic interface by **using an array whose size is dynamically increased as required**. The capacity of the List<T\> is increased by automatically reallocating the internal array to accommodate the new elements, and the existing elements are copied to the new array before the new elements are added. (This can be very heavy and waste a lot of rooms when the items number is huge)
-
-```csharp
-//The default length is 4 and is increased exponentially
-int num = (_items.Length == 0) ? 4 : (_items.Length * 2)
-```
-
-The [TrimExcess](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.trimexcess?view=net-6.0) method is used to reduce the capacity to match the count, and the [Capacity](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.capacity?view=net-6.0) and [Count](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.count?view=net-6.0) properties are displayed. If the unused capacity had been less than 10 percent of total capacity, the list would not have been resized.
-
-```csharp
-
-        // Create a list of parts.
-        List<Part> parts = new List<Part>();
-
-        // Add parts to the list.
-        parts.Add(new Part() { PartName = "crank arm", PartId = 1234 });
-        parts.Add(new Part() { PartName = "chain ring", PartId = 1334 });
-
-        // Check the list for part #1734. This calls the IEquatable.Equals method
-        // of the Part class
-        parts.Contains(new Part { PartId = 1734, PartName = "" }));
-
-        // Insert a new item at position 2.
-        parts.Insert(2, new Part() { PartName = "brake lever", PartId = 1834 });
-
-        // This will remove part 1534 even though the PartName is different,
-        // because the Equals method only checks PartId for equality.
-        parts.Remove(new Part() { PartId = 1534, PartName = "cogs" });
-
-        // This will remove the part at index 3.
-        parts.RemoveAt(3);
-
-        string[] input = { "Brachiosaurus",
-                           "Amargasaurus",
-                           "Mamenchisaurus" };
-
-        List<string> dinosaurs = new List<string>(input);
-        dinosaurs.AddRange(dinosaurs);
-
-        dinosaurs.RemoveRange(2, 2);
-
-        dinosaurs.InsertRange(3, input);
-
-        string[] output = dinosaurs.GetRange(2, 3).ToArray();
-```
-
-The [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) class uses both an equality comparer and an ordering comparer.
-
-- [Contains](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.contains?view=net-6.0), [IndexOf](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.indexof?view=net-6.0), [LastIndexOf](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.lastindexof?view=net-6.0), and [Remove](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2.remove?view=net-6.0) use an equality comparer for the list elements. If type `T` implements the [IEquatable<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1?view=net-6.0) generic interface, then the equality comparer is the [Equals(T)](<https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1.equals?view=net-6.0#system-iequatable-1-equals(-0)>) method of that interface; otherwise, the default equality comparer is [Object.Equals(Object)](<https://docs.microsoft.com/en-us/dotnet/api/system.object.equals?view=net-6.0#system-object-equals(system-object)>).
-- [BinarySearch](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-6.0) and [Sort](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.sort?view=net-6.0) use an ordering comparer for the list elements. If type `T` implements the [IComparable<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.icomparable-1?view=net-6.0) generic interface, then the default comparer is the [CompareTo(T)](<https://docs.microsoft.com/en-us/dotnet/api/system.icomparable-1.compareto?view=net-6.0#system-icomparable-1-compareto(-0)>) method of that interface; otherwise, if type `T` implements the nongeneric [IComparable](https://docs.microsoft.com/en-us/dotnet/api/system.icomparable?view=net-6.0) interface, then the default comparer is the [CompareTo(Object)](<https://docs.microsoft.com/en-us/dotnet/api/system.icomparable.compareto?view=net-6.0#system-icomparable-compareto(system-object)>) method of that interface. If type `T` implements neither interface, then there is no default comparer, and a comparer or comparison delegate must be provided explicitly. The [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) is not guaranteed to be sorted. **You must sort the [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) before performing operations (such as [BinarySearch](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-6.0)) that require the [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) to be sorted.**
-- [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) accepts `null` as a valid value for reference types and allows duplicate elements.
-
-### 2.2.2 LinkedList<T\>
-
-You can remove nodes and reinsert them, either in the same list or in another list, which results in no additional objects allocated on the heap.
-
-Each node in a [LinkedList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-6.0) object is of the type [LinkedListNode<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlistnode-1?view=net-6.0). Because the [LinkedList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-6.0) is doubly linked, each node points forward to the [Next](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlistnode-1.next?view=net-6.0) node and backward to the [Previous](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlistnode-1.previous?view=net-6.0) node.
-
-[LinkedList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-6.0) accepts `null` as a valid [Value](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlistnode-1.value?view=net-6.0) property for reference types and allows duplicate values.
-
-The [LinkedList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-6.0) class does not support chaining, splitting, cycles, or other features that can leave the list in an inconsistent state. The list remains consistent on a single thread. The only multithreaded scenario supported by [LinkedList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-6.0) is multithreaded read operations.
-
-LinkedList is mostly used for a more precise operation
-
-```csharp
-
-        // Create the link list.
-        string[] words =
-            { "the", "fox", "jumps", "over", "the", "dog" };
-        LinkedList<string> sentence = new LinkedList<string>(words);
-        Console.WriteLine(sentence.Contains("jumps"));
-
-        // Add the word 'today' to the beginning of the linked list.
-        sentence.AddFirst("today");
-
-        // Move the first node to be the last node.
-        LinkedListNode<string> mark1 = sentence.First;
-        sentence.RemoveFirst();
-        sentence.AddLast(mark1);
-       
-        // Move the last node to be the first node.
-        mark1 = sentence.Last;
-        sentence.RemoveLast();
-        sentence.AddFirst(mark1);
-       
-
-        // Indicate the last occurence of 'the'.
-        sentence.RemoveFirst();
-        LinkedListNode<string> current = sentence.FindLast("the");
-
-        // Indicate 'fox' node.
-        current = sentence.Find("fox");
- 
-
-        // Add 'quick' and 'brown' before 'fox':
-        sentence.AddBefore(current, "quick");
-        
-        // Keep a reference to the current node, 'fox',
-        // and to the previous node in the list. Indicate the 'dog' node.
-        mark1 = current;
-        LinkedListNode<string> mark2 = current.Previous;
-        current = sentence.Find("dog");
-
-```
-
-
-### 2.2.3 Stack<T\> and Queue<T\>
-
-`Stack`Represents a variable size last-in-first-out (LIFO) collection of instances of the same specified type. Stack<T\> is implemented as an array.
-
-`Queue` implements a generic queue as a circular array. Objects stored in a Queue<T\> are inserted at one end and removed from the other. （first-in-first-out）
-
-Stacks and queues are useful when you might want to discard an element after retrieving its value. Use Queue<T\> if you need to access the information in the same order that it is stored in the collection. Use System.Collections.Generic.Stack<T\> if you need to access the information in reverse order.
-
-A common use for [System.Collections.Generic.Stack<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-6.0) is to preserve variable states during calls to other procedures.
-
--Three main operations can be performed on a [System.Collections.Generic.Stack<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-6.0) and its elements:
-
-- Push inserts an element at the top of the Stack.
-- Pop removes an element from the top of the Stack.
-- Peek returns an element that is at the top of the Stack but does not remove it from the Stack.
-
-As elements are added to a Stack<T\>, the capacity is automatically increased as required by reallocating the internal array. 
-
-If [Count](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.count?view=net-6.0) is less than the capacity of the stack, [Push](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.push?view=net-6.0) is an O(1) operation. If the capacity needs to be increased to accommodate the new element, [Push](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.push?view=net-6.0) becomes an O(`n`) operation, where `n` is [Count](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.count?view=net-6.0). [Pop](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1.pop?view=net-6.0) is an O(1) operation.
-
-```csharp
-Stack<string> stack = new Stack<string>();
-stack.Push("object");//add data
-stack.Peek();//get data without delete
-stack.Pop();//get data and delete from the stack
-```
-
--Three main operations can be performed on a Queue<T\> and its elements:
-
-- Enqueue adds an element to the end of the Queue<T\>.
-- Dequeue removes the oldest element from the start of the Queue<T\>.
-- Peek peek returns the oldest element that is at the start of the Queue<T\> but does not remove it from the Queue<T\>.
-
-```csharp
-//Queue is useful for performing tasks
-Queue<string> queue = new Queue<string>();
-queue.Enqueue("object");//add data
-queue.Enqueue("object1");
-foreach (var item in queue)
-{
- Console.WriteLine(item);
-}
-queue.Dequeue();//get the earliest item and delete from the queue
-queue.Peek();//get data without delete
-```
-
-### 2.2.4 SortedSet<T\>
-
-### 2.2.5 HashSet<T\>
-
-### 2.2.6 PriorityQueue<TElement,TPriority\>
+While I was doing my master thesis, I tried to get location information for Paris stations from an XML file and Generate node objects accordingly. In unity, I used the system.xml library to fulfill the function. But it seems is not working in HoloLens. The file cannot be sent into HoloLens after being compiled and deployed.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./xmlFile.png" width = "60%" alt="xmlFile.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure1 The XML I tried to Parse
+  	</div>
+</left>
+
+Below is the code that I used in unity Editor to parse the XML data. (system.xml)
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./UnityEditor.png" width = "60%" alt="UnityEditor.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+Figure2 Parsing XML data from Unity Editor
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./Scene in Unity.png" width = "60%" alt="Scene in Unity.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure3 The Station Map I want to get
+  	</div>
+</left>
+
+So I did some research and find out that the UWP platform is using a different API system called [Windows.data.Xml.Dom](https://docs.microsoft.com/en-us/uwp/api/windows.data.xml.dom?view=winrt-19041)
+
+So while it's running in the UWP platform, you have to use this library to deal with the XML file.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./UWP.png" width = "60%" alt="UWP.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure4 Parsing XML data for UWP build
+  	</div>
+</left>
+
+
+But there is still the problem that the XML is not in the project when I opened it in Visual studio. Then I manually put the XML file into the compiled project folder called Asset. The key is to set the property of the XML file to be included in the build( the default option is excluded)
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="./FileScreenShot.png" width = "60%" alt="FileScreenShot.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure5 Add file process
+  	</div>
+</left>
+
+
+
+<left>
+    <img style="border-radius: 0.1125em;width:100%;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://qi-uxportfolio.firebaseapp.com/static/media/Figure1.620a2802.gif" width = "60%" alt="Figure1.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure6 Final Demo
+  	</div>
+</left>
+
+
+Also, You can Instantiate the object in edit mode using `[ExecuteInEditMode]`. I found this more customizable. I used this method later during the project. But I have to admit that this is less flexible if you want to change some structure from the bottom. If still get confused about the process, check out these links below where I got inspiration from.
 
 <br/>
 <br/>
@@ -343,10 +102,8 @@ queue.Peek();//get data without delete
 
 # Reference
 
-[https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections)
 
-[System.Collection](https://docs.microsoft.com/en-us/dotnet/api/system.collections?view=net-6.0) documentation page
 
-[System.Collection.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic?view=net-6.0) documentation page
+[Discussions about how to load XML files on Hololens in runtime](https://forums.hololens.com/discussion/6472/load-xml-files-on-hololens-in-runtime)
 
-[The implementation of Dictionary (ZH)](https://www.cnblogs.com/incerry/p/10325290.html)
+[https://stackoverflow.com/questions/51389737/reading-xml-files-in-a-unity-hololens-project-works-in-editor-not-in-deployed](https://stackoverflow.com/questions/51389737/reading-xml-files-in-a-unity-hololens-project-works-in-editor-not-in-deployed)
