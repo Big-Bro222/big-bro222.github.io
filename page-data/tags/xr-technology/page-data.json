@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
     "path": "/tags/xr-technology",
-    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/text-size-hololens","title":"A discussion for text size in HoloLens(Unity3D)","date":"07.05.2022","excerpt":"During the quarantine,  I cannot test my HoloLens projects with my supervisor on site. So we had to use Videos to communicate with each…","timeToRead":2,"description":null,"tags":[{"name":"XR technology","slug":"xr-technology"}]}]}},"pageContext":{"slug":"xr-technology","name":"XR technology","formatString":"DD.MM.YYYY"}},
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/text-size-hololens","title":"A discussion for text size in HoloLens(Unity3D)","date":"25.04.2020","excerpt":"During the quarantine,  I cannot test my HoloLens projects with my supervisor on site. So we had to use Videos to communicate with each…","timeToRead":2,"description":null,"tags":[{"name":"XR technology","slug":"xr-technology"}]}]}},"pageContext":{"slug":"xr-technology","name":"XR technology","formatString":"DD.MM.YYYY"}},
     "staticQueryHashes": ["2744905544","3090400250","318001574"]}
