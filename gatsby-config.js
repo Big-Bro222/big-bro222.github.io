@@ -29,7 +29,7 @@ module.exports = {
           },
           {
             title: `About`,
-            slug: `/holopiano`,
+            slug: `/about`,
           },
         ],
         externalLinks: [

@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
-import DesignconceptUrl from "../../../src/img/holopiano/Design concept.png";
-import TeachingScenarioUrl from "../../../src/img/holopiano/teaching scenario 1.png";
-import StoryboardUrl from "../../../src/img/holopiano/Storyboard 2.png";
-import Prototype1Url from "../../../src/img/holopiano/1st gen.png";
-import Prototype2Url from "../../../src/img/holopiano/2nd gen 1.png";
-import UserTestingUrl from "../../../src/img/holopiano/UserTesting 1.png";
-import UIUrl from "../../../src/img/holopiano/UI.png";
-import SystemdiagramUrl from "../../../src/img/holopiano/System diagram 1.png";
-import SectionSelectionUrl from "../../../src/img/holopiano/SectionSelection.gif";
-import MenuUrl from "../../../src/img/holopiano/Menu.gif";
-import "../../../src/ProjectStyle.css";
+import DesignconceptUrl from "../../../../src/img/holopiano/Design concept.png";
+import TeachingScenarioUrl from "../../../../src/img/holopiano/teaching scenario 1.png";
+import StoryboardUrl from "../../../../src/img/holopiano/Storyboard 2.png";
+import Prototype1Url from "../../../../src/img/holopiano/1st gen.png";
+import Prototype2Url from "../../../../src/img/holopiano/2nd gen 1.png";
+import UserTestingUrl from "../../../../src/img/holopiano/UserTesting 1.png";
+import UIUrl from "../../../../src/img/holopiano/UI.png";
+import SystemdiagramUrl from "../../../../src/img/holopiano/System diagram 1.png";
+import SectionSelectionUrl from "../../../../src/img/holopiano/SectionSelection.gif";
+import MenuUrl from "../../../../src/img/holopiano/Menu.gif";
+import "../../../../src/ProjectStyle.css";
 
 export default class HoloPiano extends Component {
   constructor(props) {
