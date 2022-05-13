@@ -329,24 +329,89 @@ queue.Dequeue();//get the earliest item and delete from the queue
 queue.Peek();//get data without delete
 ```
 
-### 2.2.4 SortedSet<T\>
+### 2.2.4 HashSet<T\>
 
-### 2.2.5 HashSet<T\>
+The `HashSet<T>` class provides high-performance set operations. A set is a collection that contains **no duplicate elements**, and whose elements are in **no particular order**. A `HashSet<T>` object's capacity automatically increases as elements are added to the object.
+
+The HashSet<T\> class is based on the model of mathematical sets and provides high-performance set operations similar to accessing the keys of sed on the model of mathematical sets and provides high-performance set operations similar to accessing the keys of the  Dictionary<TKey,TValue\> .
+
+HashSet<T\> provides many mathematical set operations, **such** **as set addition (unions) and set subtraction**.
+
+```csharp
+HashSet<int> evenNumbers = new HashSet<int>();
+HashSet<int> oddNumbers = new HashSet<int>();
+// Populate numbers with just even numbers.
+evenNumbers.Add(i * 2);
+// Populate odd numbers with just odd numbers.
+oddNumbers.Add((i * 2) + 1);
+
+// Create a new HashSet populated with even numbers.
+HashSet<int> numbers = new HashSet<int>(evenNumbers);
+numbers.UnionWith(oddNumbers);
+
+// Ensures that this hash set can hold the specified number of elements without growing.
+evenNumbers.EnsureCapacity(30);
+
+//The lower range of values is then removed from the larger set using the ExceptWith method.
+highNumbers.ExceptWith(lowNumbers);
+
+//Modifies the current HashSet<T> object to contain only elements that are present in that object and in the specified collection.
+highNumbers.IntersectWith(lowNumbers);
+
+//bool value of if the allNumbers subset has some elements in common with the lowNumbers
+lowNumbers.Overlaps(allNumbers));
+
+//bool value of allNumbers and lowNumbers are equal sets
+allNumbers.SetEquals(lowNumbers));
+
+// Show the results of sub/superset testing
+lowNumbers.IsSubsetOf(allNumbers));
+allNumbers.IsSupersetOf(lowNumbers));
+lowNumbers.IsProperSubsetOf(allNumbers));
+allNumbers.IsProperSupersetOf(lowNumbers));
+
+// Check if the hash table contains 0 and, if so, remove it.
+if (numbers.Contains(0)) {
+    numbers.Remove(0);
+}
+
+// Remove all odd numbers.
+numbers.RemoveWhere(IsOdd);
+bool IsOdd(int i)
+{
+    return ((i % 2) == 1);
+}
+
+//to contain only the values that are not present in both sets.
+lowNumbers.SymmetricExceptWith(highNumbers);
+
+//release the memory
+Numbers.TrimExcess();
+
+// Create a new HashSet populated with even numbers.Constructor
+HashSet<int> numbers = new HashSet<int>(evenNumbers);
+```
+
+### 2.2.5 SortedSet<T\>
+
+Represents a collection of objects that is maintained in sorted order. The relationship between SortedSet and HashSet is similar to the relationship between Dictionary and SortedDictionary. Implemented using binary-tree.It has O(log n) retrieval. While using foreach loop, the output will be ordered in ascending order（and can be reversed by the reverse method）.
 
 ### 2.2.6 PriorityQueue<TElement,TPriority\>
 
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+There is already an implementation on the official documentation, but cannot be used in Unity right now. Might need further investigation in the future.
+
+## 2.3 Concurrent collections
+
+There are several collections for multithreading, is under System.Collections.Concurrent namespace, which I think I will investigate on it after I finish my multithreading theme learning.
 
 # Reference
 
 [https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/collections)
 
-[System.Collection](https://docs.microsoft.com/en-us/dotnet/api/system.collections?view=net-6.0) documentation page
+[System.Collection](https://docs.microsoft.com/en-us/dotnet/api/system.collections?view=net-6.0) 
 
-[System.Collection.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic?view=net-6.0) documentation page
+[System.Collection.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic?view=net-6.0) 
 
 [The implementation of Dictionary (ZH)](https://www.cnblogs.com/incerry/p/10325290.html)
+
+[Systems.Collections.Concurrent](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent?view=net-6.0)

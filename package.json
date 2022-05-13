@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@lekoarts/gatsby-theme-minimal-blog": "^4.0.0",
+    "@lottiefiles/react-lottie-player": "^3.4.7",
     "gatsby": "^4.12.1",
     "gatsby-omni-font-loader": "^2.0.0",
     "gatsby-plugin-feed": "^4.12.1",
