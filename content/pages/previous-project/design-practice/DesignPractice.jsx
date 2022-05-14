@@ -1,12 +1,5 @@
 import React, { Component } from 'react'
 import "../../../../src/ProjectStyle.css";
-import GamePostertUrl from '../../../../src/img/DesignPractise/GamePoster.png'
-import BannerUrl from '../../../../src/img/DesignPractise/Banner.png'
-import PosterDesignUrl from '../../../../src/img/DesignPractise/Poster Design.png'
-import RadioUrl from '../../../../src/img/DesignPractise/Radio.png'
-import ThreeDmodelUrl from '../../../../src/img/DesignPractise/3D modeling.png'
-
-
 
 export default class DesignPractice extends Component {
     render() {
@@ -22,11 +15,11 @@ export default class DesignPractice extends Component {
                     <br></br>
                     <br></br>
                     <br></br>
-                    <img src={GamePostertUrl} className="designimage" alt='GamePostertUrl'></img>
-                    <img src={RadioUrl} className="designimage" alt='RadioUrl'></img>
-                    <img src={ThreeDmodelUrl} className="designimage" alt='ThreeDmodelUrl'></img>
-                    <img src={BannerUrl} className="designimage" alt='BannerUrl'></img>
-                    <img src={PosterDesignUrl} className="designimage" alt='PosterDesignUrl'></img>
+                    <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/DesignPractise/GamePoster.png"  className="designimage" alt='GamePostertUrl'></img>
+                    <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/DesignPractise/Radio.png"       className="designimage" alt='RadioUrl'></img>
+                    <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/DesignPractise/3D_modeling.png" className="designimage" alt='ThreeDmodelUrl'></img>
+                    <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/DesignPractise/Banner.png" className="designimage" alt='BannerUrl'></img>
+                    <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/DesignPractise/Poster_Design.png"  className="designimage" alt='PosterDesignUrl'></img>
                 </div>
             </div>
         )

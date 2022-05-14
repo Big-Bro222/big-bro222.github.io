@@ -1,13 +1,6 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
 import "../../../../src/ProjectStyle.css";
-import StoryBoard1Url from "../../../../src/img/Rugbeats/storyboard1.png";
-import StoryBoard2Url from "../../../../src/img/Rugbeats/storyboard2.png";
-import UI1Url from "../../../../src/img/Rugbeats/UI1.png";
-import UI2Url from "../../../../src/img/Rugbeats/UI2.png";
-import UI3Url from "../../../../src/img/Rugbeats/UI3.png";
-import UI4Url from "../../../../src/img/Rugbeats/UI4.png";
-import UI5Url from "../../../../src/img/Rugbeats/UI5.png";
 
 export default class Rugbeats extends Component {
   render() {
@@ -43,12 +36,12 @@ export default class Rugbeats extends Component {
             </p>
             <div className="singlewrapper">
               <img
-                src={StoryBoard1Url}
+                src='https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/storyboard1.png'
                 className="WideImage"
                 alt="StoryBoard1"
               ></img>
               <img
-                src={StoryBoard2Url}
+                src='https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/storyboard2.png'
                 className="WideImage"
                 alt="StoryBoard2"
               ></img>
@@ -59,11 +52,11 @@ export default class Rugbeats extends Component {
           <div className="section ">
             <h1 className="title">Game Interface</h1>
             <div className="singlewrapper">
-              <img src={UI1Url} className="WideImage" alt="UI1"></img>
-              <img src={UI2Url} className="WideImage" alt="UI2"></img>
-              <img src={UI3Url} className="WideImage" alt="UI3"></img>
-              <img src={UI4Url} className="WideImage" alt="UI4"></img>
-              <img src={UI5Url} className="WideImage" alt="UI5"></img>
+              <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/UI1.png"  className="WideImage" alt="UI1"></img>
+              <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/UI2.png"  className="WideImage" alt="UI2"></img>
+              <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/UI3.png"  className="WideImage" alt="UI3"></img>
+              <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/UI4.png"  className="WideImage" alt="UI4"></img>
+              <img src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rugbeats/UI5.png"  className="WideImage" alt="UI5"></img>
             </div>
           </div>
 

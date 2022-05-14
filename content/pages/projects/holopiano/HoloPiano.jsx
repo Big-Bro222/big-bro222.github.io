@@ -1,15 +1,5 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
-import DesignconceptUrl from "../../../../src/img/holopiano/Design concept.png";
-import TeachingScenarioUrl from "../../../../src/img/holopiano/teaching scenario 1.png";
-import StoryboardUrl from "../../../../src/img/holopiano/Storyboard 2.png";
-import Prototype1Url from "../../../../src/img/holopiano/1st gen.png";
-import Prototype2Url from "../../../../src/img/holopiano/2nd gen 1.png";
-import UserTestingUrl from "../../../../src/img/holopiano/UserTesting 1.png";
-import UIUrl from "../../../../src/img/holopiano/UI.png";
-import SystemdiagramUrl from "../../../../src/img/holopiano/System diagram 1.png";
-import SectionSelectionUrl from "../../../../src/img/holopiano/SectionSelection.gif";
-import MenuUrl from "../../../../src/img/holopiano/Menu.gif";
 import "../../../../src/ProjectStyle.css";
 
 export default class HoloPiano extends Component {
@@ -37,7 +27,7 @@ export default class HoloPiano extends Component {
             </p>
             <div className="singlewrapper">
               <img
-                src={DesignconceptUrl}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/Design_concept.png"
                 className="WideImage"
                 alt="Design Concept"
               ></img>
@@ -46,7 +36,7 @@ export default class HoloPiano extends Component {
 
             <div className="singlewrapper">
               <img
-                src={TeachingScenarioUrl}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/teaching_scenario_1.png"
                 className="WideImage"
                 alt="Teaching Scenario"
               ></img>
@@ -60,7 +50,7 @@ export default class HoloPiano extends Component {
             <h1 className="title">Storyboard</h1>
 
             <img
-              src={StoryboardUrl}
+              src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/Storyboard_2.png"
               style={{ width: "100%" }}
               className="WideImage"
               alt="StoryBoard"
@@ -83,12 +73,12 @@ export default class HoloPiano extends Component {
             <div className="doublewrapper">
               <img
                 className="double"
-                src={Prototype1Url}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/1st_gen.png"
                 alt="Prototype1"
               ></img>
               <img
                 className="double"
-                src={Prototype2Url}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/2nd_gen_1.png"
                 alt="Prototype2"
               ></img>
               <p className="Figurediscriptiondouble">
@@ -133,7 +123,7 @@ export default class HoloPiano extends Component {
             <h1 className="title">Final system Diagram</h1>
             <div className="singlewrapper">
               <img
-                src={SystemdiagramUrl}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/System_diagram_1.png"
                 className="WideImage"
                 alt="System Diagram"
               ></img>
@@ -143,7 +133,11 @@ export default class HoloPiano extends Component {
 
           <div className="section  ">
             <h1 className="title">UI Design</h1>
-            <img src={UIUrl} className="WideImage" alt="UIUrl"></img>
+            <img
+              src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/UI.png"
+              className="WideImage"
+              alt="UIUrl"
+            ></img>
           </div>
 
           <div className="section  ">
@@ -155,7 +149,7 @@ export default class HoloPiano extends Component {
             </p>
             <div className="singlewrapper">
               <img
-                src={UserTestingUrl}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/UserTesting_1.png"
                 className="WideImage"
                 alt="User testing"
               ></img>
@@ -182,12 +176,15 @@ export default class HoloPiano extends Component {
             <h1 className="title">Final Output</h1>
 
             <div className="singlewrapper">
-              <img src={MenuUrl} className="WideImage" alt="Menu"></img>
+              <img 
+              src='https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/Menu.gif'
+              className="WideImage" 
+              alt="Menu"></img>
               <p className="Figurediscription">Figure6 Menu Selection</p>
             </div>
             <div className="singlewrapper">
               <img
-                src={SectionSelectionUrl}
+                src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/holopiano/SectionSelection.gif"
                 className="WideImage"
                 alt="SectionSelection"
               ></img>
