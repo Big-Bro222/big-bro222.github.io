@@ -1,0 +1,230 @@
+---
+title: "Collections in C# (The basics 3)"
+date: 2022-05-20
+description: A discussion for C# System.Collections and System.Collection.generic
+slug: "/blog/collection-csharp-basic/3"
+tags:
+  - C# basics
+---
+
+# 5. Commonly used interfaces and method implementation
+
+<left>
+    <img style="border-radius: 0.1125em;
+     box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/Collections-in-CSharp(The-basics-3)/interface.png" width = "100%" alt="MapVisualization.gif"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 Hierarchy of interfaces in collection
+  	</div>
+</left>
+
+The main interfaces of Collection
+
+### IEnumerable<T\>
+Exposes the enumerator, which supports a simple iteration over a collection of a specified type.
+
+Collections that implement [IEnumerable<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1?view=net-6.0) can be enumerated by using the `foreach`statement.
+
+The foreach statement is a syntax sugar, it’s actually the MoveNext(), Current() and Reset() in [IEnumerator<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1?view=net-6.0) do the job.
+
+### **ICollection<T\>**
+
+The [ICollection<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icollection-1?view=net-6.0) interface extends [IEnumerable<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1?view=net-6.0);[IDictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.idictionary-2?view=net-6.0)
+ and [IList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-6.0)are more specialized interfaces that extend [ICollection<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icollection-1?view=net-6.0). A [IDictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.idictionary-2?view=net-6.0) implementation is a collection of **key/value pairs**, like the [Dictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0)class. A [IList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-6.0)implementation is a collection of values, and its members can be accessed by index, like the [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0)class.
+
+Methods: **Add, Clear,Contains, Copy to, Remove** ( **Bold** represents new methods apart from the parent interface )
+
+Uses IEquatable<T\> to determine whether a instance is in the collection, or you can write your own EqualityComparer<T\> to determine for a specific collection. An example will be discussed later.
+
+### **IList<T\>**
+
+The [IList<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-6.0) generic interface is a descendant of the [ICollection<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icollection-1?view=net-6.0) generic interface and is the base interface of all generic lists.
+
+Methods: **IndexOf, Insert, RemoveAt** ( **Bold** represents new methods apart from the parent interface )
+
+While deleting a element from the IList<T\>, one should use `for` with a descending order instead of using `foreach.` Because RemoveAt() method will change the index of other elements.
+
+### **IDictionary<TKey,TValue\>**
+
+The [IDictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.idictionary-2?view=net-6.0) interface is the base interface for generic collections of key/value pairs. Each element is a key/value pair stored in a [KeyValuePair<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.keyvaluepair-2?view=net-6.0) object.
+
+Methods: **ContainsKey, TryGetValue** ( **Bold** represents new methods apart from the parent interface )
+
+### **ISet<T\>**
+
+This interface provides methods for implementing sets, which are collections that have unique elements and specific operations. The [HashSet<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-6.0) and [SortedSet<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedset-1?view=net-6.0) collections implement this interface.
+
+Implementations can vary in how they determine equality of objects; for example, the [List<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) class uses [Comparer<T\>.Default](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1.default?view=net-6.0), whereas the [Dictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0) class allows the user to specify the [IComparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icomparer-1?view=net-6.0) implementation to use for comparing keys.
+
+### IComparer<T\> and IEqulityComparer<T\>
+
+This interface is used with the [List<T\>.Sort](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.sort?view=net-6.0) and [List<T\>.BinarySearch](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-6.0) methods. It provides a way to customize the sort order of a collection. Classes that implement this interface include the [SortedDictionary<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2?view=net-6.0) and [SortedList<TKey,TValue\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedlist-2?view=net-6.0) generic classes.
+
+The default implementation of this interface is the [Comparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1?view=net-6.0) class. The [StringComparer](https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparer?view=net-6.0) class implements this interface for type [String](https://docs.microsoft.com/en-us/dotnet/api/system.string?view=net-6.0).
+
+This interface supports ordering comparisons. That is, when the [Compare](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1.compare?view=net-6.0) method returns 0, it means that two objects sort the same. Implementation of exact equality comparisons is provided by the [IEqualityComparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-6.0) generic interface.
+
+We recommend that you derive from the [Comparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1?view=net-6.0) class instead of implementing the [IComparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icomparer-1?view=net-6.0) interface, because the [Comparer<T\>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1?view=net-6.0) class provides an explicit interface implementation of the [IComparer.Compare](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1.system-collections-icomparer-compare?view=net-6.0) method and the [Default](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.comparer-1.default?view=net-6.0) property that gets the default comparer for the object.
+
+Comparer is very useful in generic collections, because it’s the core of finding by key, sorting and add value by key.
+
+With these two interface, we can customize the why of sorting data or query data by key.
+
+***You can assign a comparer implementing the interface( Icomparer or Iequalitycomparer )in constructors***
+
+```csharp
+//one way of using comparer(Icomparer)
+    static Dictionary<Box, String> boxes;
+
+    static void Main()
+    {
+//Boxes equality by Dimension
+        BoxSameDimensions boxDim = new BoxSameDimensions();
+        boxes = new Dictionary<Box, string>(boxDim);
+        Box redBox = new Box(8, 4, 8);
+        Box greenBox = new Box(8, 6, 8);
+        Box blueBox = new Box(8, 4, 8);
+        Box yellowBox = new Box(8, 8, 8);
+        AddBox(redBox, "red");
+        AddBox(greenBox, "green");
+        AddBox(blueBox, "blue");
+        AddBox(yellowBox, "yellow");
+
+//Boxes equality by volume
+        BoxSameVolume boxVolume = new BoxSameVolume();
+        boxes = new Dictionary<Box, string>(boxVolume);
+        Box pinkBox = new Box(8, 4, 8);
+        Box orangeBox = new Box(8, 6, 8);
+        Box purpleBox = new Box(4, 8, 8);
+        Box brownBox = new Box(8, 8, 4);
+        AddBox(pinkBox, "pink");
+        AddBox(orangeBox, "orange");
+        AddBox(purpleBox, "purple");
+        AddBox(brownBox, "brown");
+    }
+
+public class Box
+{
+    public Box(int h, int l, int w)
+    {
+        this.Height = h;
+        this.Length = l;
+        this.Width = w;
+    }
+    public int Height { get; set; }
+    public int Length { get; set; }
+    public int Width { get; set; }
+}
+
+class BoxSameDimensions : EqualityComparer<Box>
+{
+    public override bool Equals(Box b1, Box b2)
+    {
+        if (b1 == null && b2 == null)
+            return true;
+        else if (b1 == null || b2 == null)
+            return false;
+
+        return (b1.Height == b2.Height &&
+                b1.Length == b2.Length &&
+                b1.Width == b2.Width);
+    }
+
+    public override int GetHashCode(Box bx)
+    {
+        int hCode = bx.Height ^ bx.Length ^ bx.Width;
+        return hCode.GetHashCode();
+    }
+}
+
+class BoxSameVolume : EqualityComparer<Box>
+{
+    public override bool Equals(Box b1, Box b2)
+    {
+        if (b1 == null && b2 == null)
+            return true;
+        else if (b1 == null || b2 == null)
+            return false;
+
+        return (b1.Height * b1.Width * b1.Length ==
+                b2.Height * b2.Width * b2.Length);
+    }
+
+    public override int GetHashCode(Box bx)
+    {
+        int hCode = bx.Height * bx.Length * bx.Width;
+        return hCode.GetHashCode();
+    }
+}
+```
+
+The item class can also derive from comparer (Equalitycomparer)
+
+```csharp
+
+Boxes.Sort(new BoxLengthFirst());
+
+public class BoxLengthFirst : Comparer<Box>
+{
+    // Compares by Length, Height, and Width.
+    public override int Compare(Box x, Box y)
+    {
+        if (x.Length.CompareTo(y.Length) != 0)
+        {
+            return x.Length.CompareTo(y.Length);
+        }
+        else if (x.Height.CompareTo(y.Height) != 0)
+        {
+            return x.Height.CompareTo(y.Height);
+        }
+        else if (x.Width.CompareTo(y.Width) != 0)
+        {
+            return x.Width.CompareTo(y.Width);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+
+/***********************or***********************/
+
+Boxes.Sort();
+public class Box: Comparer<Box>
+{
+    // Compares by Length, Height, and Width.
+    public override int Compare(Box x, Box y)
+    {
+        if (x.Length.CompareTo(y.Length) != 0)
+        {
+            return x.Length.CompareTo(y.Length);
+        }
+        else if (x.Height.CompareTo(y.Height) != 0)
+        {
+            return x.Height.CompareTo(y.Height);
+        }
+        else if (x.Width.CompareTo(y.Width) != 0)
+        {
+            return x.Width.CompareTo(y.Width);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
+```
+
+[Collections in C# (The basics 1)](/blog/collection-csharp-basic/1)
+
+[Collections in C# (The basics 2)](/blog/collection-csharp-basic/2)
+
+[Collections in C# (The basics 3)](/blog/collection-csharp-basic/3)
+
+# Reference
+
+[从零开始分析C#所有常用集合类的设计（源码向）](https://zhuanlan.zhihu.com/p/104279428)

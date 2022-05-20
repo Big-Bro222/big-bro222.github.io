@@ -1,5 +1,6 @@
 ---
 title: "Collections in C# (The basics 1)"
+description: A discussion for C# System.Collections and System.Collection.generic
 date: 2022-05-03
 slug: "/blog/collection-csharp-basic/1"
 tags:
@@ -386,7 +387,7 @@ bool IsOdd(int i)
 lowNumbers.SymmetricExceptWith(highNumbers);
 
 //release the memory
-Numbers.TrimExcess();
+collection-csharp-basic-1 copyNumbers.TrimExcess();
 
 // Create a new HashSet populated with even numbers.Constructor
 HashSet<int> numbers = new HashSet<int>(evenNumbers);
@@ -402,7 +403,15 @@ There is already an implementation on the official documentation, but cannot be 
 
 ## 2.3 Concurrent collections
 
-There are several collections for multithreading, is under System.Collections.Concurrent namespace, which I think I will investigate on it after I finish my multithreading theme learning.
+*There are several collections for multithreading, is under System.Collections.Concurrent namespace, which I think I will investigate on it after I finish my multithreading theme learning.*
+
+*The previous are mostly about how to use generic collections, here is a [link](https://zhuanlan.zhihu.com/p/104279428) for further discussion for analysing the source code. I will take a further look in the near future*
+
+[Collections in C# (The basics 1)](/blog/collection-csharp-basic/1)
+
+[Collections in C# (The basics 2)](/blog/collection-csharp-basic/2)
+
+[Collections in C# (The basics 3)](/blog/collection-csharp-basic/3)
 
 # Reference
 
@@ -415,3 +424,5 @@ There are several collections for multithreading, is under System.Collections.Co
 [The implementation of Dictionary (ZH)](https://www.cnblogs.com/incerry/p/10325290.html)
 
 [Systems.Collections.Concurrent](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent?view=net-6.0)
+
+[从零开始分析C#所有常用集合类的设计（源码向）](https://zhuanlan.zhihu.com/p/104279428)
