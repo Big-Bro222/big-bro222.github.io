@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/code-management-and-collaboration",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/git-lfs","title":"Git LFS","date":"25.01.2022","excerpt":"When you add a file to your repository, Git LFS replaces its contents with a pointer, and stores the file contents in a local Git LFS cache…","timeToRead":1,"description":"Git LFS","tags":[{"name":"Code management and collaboration","slug":"code-management-and-collaboration"}]}]}},"pageContext":{"slug":"code-management-and-collaboration","name":"Code management and collaboration","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}

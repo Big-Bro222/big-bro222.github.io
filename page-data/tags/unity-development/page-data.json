@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/unity-development",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/preprocessor-directives","title":"Preprocessor directives(C# and Unity)","date":"12.04.2022","excerpt":"1.C# preprocessor directives Defining symbols You use the following two preprocessor directives to define or undefine symbols for…","timeToRead":1,"description":"Preprocessor directives(C# and Unity)","tags":[{"name":"Unity development","slug":"unity-development"}]}]}},"pageContext":{"slug":"unity-development","name":"Unity development","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
