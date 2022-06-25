@@ -1,0 +1,113 @@
+---
+title: "C#泛型Generic"
+description: C#泛型Generic
+date: 2021-07-19
+slug: "/blog/CSharpGeneric"
+tags:
+  - C# basics
+---
+
+# C#泛型Generic
+
+# 1.泛型的四种类型
+
+泛型有四种：
+
+- 泛型方法 method
+- 泛型类 class
+- 泛型委托 delegate
+- 泛型接口 interface
+
+优点Pros：代码的可重用性增加，类型安全性提高。性能更好,不需要装箱和拆箱。泛型委托可以在无需创建多个委托类的情况下进行类型安全的回调。泛型简化动态生成的代码。
+
+泛型在声明的时候没有指明类型，而是在调用的时候指定类型，这种设计思想是延迟思想
+
+# 2.泛型缓存
+
+泛型类的静态成员只能在类的一个实例中共享。运行时泛型类的实例已经指定了具体类型，每一个不同的泛型类实例共享静态成员，利用这个特点就可以做缓存。每一个不同的T缓存一个版本数据。如例子所示，当第一次指定不同的T时，会重新构造，再次有相同的类型时，就不会进入静态构造函数了。相当于为缓存了多个版本的静态成员。比如在各个数据库实体类需要有一些增删改查的SQL时，就可以利用用泛型特性，每一个数据库实体类都会缓存一份自己的增删改查SQL。
+
+```
+public class GenericCache<T>
+{
+    static GenericCache()
+    {
+        Console.WriteLine("进入静态构造函数");
+        _TypeTime = $"{typeof(T).FullName}_{DateTime.Now.ToString()}";
+    }
+
+    private static string _TypeTime = "";
+
+    public static string GetCache()
+    {
+        return _TypeTime;
+    }
+}
+
+Console.WriteLine("************************");
+Console.WriteLine(GenericCache<int>.GetCache());
+Thread.Sleep(1000);
+Console.WriteLine(GenericCache<string>.GetCache());
+Thread.Sleep(1000);
+Console.WriteLine("认真比较打印出的静态成员值");
+Console.WriteLine(GenericCache<int>.GetCache());
+Thread.Sleep(1000);
+Console.WriteLine(GenericCache<string>.GetCache());
+Console.WriteLine("************************");
+```
+
+![a38edd65eda84685b56c3e6287c1b910.png](C#%E6%B3%9B%E5%9E%8BGeneric%2069d8ed0f895748579cb4f88b39710c7f/a38edd65eda84685b56c3e6287c1b910.png)
+
+# 3.约束Constrain
+
+public Method<T\>(T parameter) where T: constrain, Iconstrain（类，接口）
+
+public Method<T\>(T parameter) where T: class（or struct）
+
+default（T）;值类型默认
+
+null；引用类型默认
+
+# 4.泛型类的继承
+
+class ChildClass<T\>: GenericParentClass<T\>
+
+class ChildClass : GenericParentClass<int\>
+
+# 5.协变和逆变
+
+协变（out），逆变（in）,只能在接口和委托上使用
+
+要解决的问题如下：sparrow和Bird为父子关系，但是List<sparrow/>和List<Bird/>不是父子关系
+
+对应这样的问题
+
+```csharp
+class sparrow: Bird
+
+##right writing
+Bird instance=new sparrow();
+sparrow instance=new sparrow();
+Bird instance=new Bird();
+
+##wrong writing
+list<Bird> instance=new List<sparrow>();
+```
+
+协变：可以左面是父类型，右面是子类型，要求T只能是返回值，不能做参数
+
+```csharp
+
+IEnumerable<Bird> instance=new List<sparrow>();
+
+public interface ICustomerListOut<out T>
+public class CustomerListOut<T>:ICustomerListOut<T>
+ICustomerListOut<Bird> customer=new CustomerListOut<Sparrow>();
+```
+
+逆变：可以左面是子类型，右面是父类型，要求T这能作为参数，不能作为返回值
+
+协变逆变使声明接口和委托的时候可以更灵活，避免list<Bird/> instance=new List<sparrow/>(); 这种语义通但是不能编译的行为出现
+
+# Reference
+
+[https://docs.microsoft.com/zh-cn/dotnet/standard/generics](https://docs.microsoft.com/zh-cn/dotnet/standard/generics)

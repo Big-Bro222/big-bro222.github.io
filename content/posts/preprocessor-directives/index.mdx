@@ -1,0 +1,155 @@
+---
+title: "Preprocessor directives(C# and Unity)"
+description: Preprocessor directives(C# and Unity)
+date: 2022-04-12
+slug: "/blog/preprocessor-directives"
+tags:
+  - Unity development
+---
+
+
+# 1.C# preprocessor directives
+
+## Defining symbols
+
+You use the following two preprocessor directives to define or undefine symbols for conditional compilation， these is mostly combine will the conditional compilation:
+
+- `#define`: Define a symbol.
+- `#undef`: Undefine a symbol.
+
+## Conditional compilation
+
+You use four preprocessor directives to control conditional compilation:
+
+- `#if`: Opens a conditional compilation, where code is compiled only if the specified symbol is defined.
+- `#elif`: Closes the preceding conditional compilation and opens a new conditional compilation based on if the specified symbol is defined.
+- `#else`: Closes the preceding conditional compilation and opens a new conditional compilation if the previous specified symbol isn't defined.
+- `#endif`: Closes the preceding conditional compilation.
+
+You can use the operators `==` (equality)]and `!=` (inequality)]to test for the `bool` 
+values `true`or `false`. `true`means the symbol is defined. The statement `#if DEBUG`
+ has the same meaning as `#if (DEBUG == true)`. You can use the [&&` 
+ operators to evaluate whether multiple symbols have been defined. You can also group symbols and operators with parentheses.
+
+```csharp
+#define MYTEST
+using System;
+public class MyClass
+{
+    static void Main()
+    {
+#if (DEBUG && !MYTEST)
+        Console.WriteLine("DEBUG is defined");
+#elif (!DEBUG && MYTEST)
+        Console.WriteLine("MYTEST is defined");
+#elif (DEBUG && MYTEST)
+        Console.WriteLine("DEBUG and MYTEST are defined");  
+#else
+        Console.WriteLine("DEBUG and MYTEST are not defined");
+#endif
+    }
+}
+```
+
+## Defining regions
+
+You can define regions of code that can be collapsed in an outline using the following two preprocessor directives: `#region` `#endregion`
+
+```csharp
+#region MyClass definition
+public class MyClass
+{
+    static void Main()
+    {
+    }
+}
+#endregion
+```
+
+## Error and warning information
+
+You instruct the compiler to generate user-defined compiler errors and warnings, and control line information using the following directives:
+
+- `#error`: Generate a compiler error with a specified message.
+- `#warning`: Generate a compiler warning, with a specific message.
+- `#line`: Change the line number printed with compiler messages.
+
+```csharp
+#error Deprecated code in this method.
+
+#warning Deprecated code in this method.
+```
+
+## Pragmas
+
+This has been used in shaders to define the function name of vertex shader and fragment shader
+
+```csharp
+#pragma pragma-name pragma-arguments
+```
+
+# 2.Unity Platform #define directives
+
+## 2.1 Platform
+
+| Property: | Function: |
+| --- | --- |
+| UNITY_EDITOR | #define directive for calling Unity Editor scripts from your game code. |
+| UNITY_EDITOR_WIN | #define directive for Editor code on Windows. |
+| UNITY_EDITOR_OSX | #define directive for Editor code on Mac OS X. |
+| UNITY_STANDALONE_OSX | #define directive for compiling/executing code specifically for Mac OS X (including Universal, PPC and Intel architectures). |
+| UNITY_STANDALONE_WIN | #define directive for compiling/executing code specifically for Windows standalone applications. |
+| UNITY_STANDALONE_LINUX | #define directive for compiling/executing code specifically for Linux standalone applications. |
+| UNITY_STANDALONE | #define directive for compiling/executing code for any standalone platform (Mac OS X, Windows or Linux). |
+| UNITY_WII | #define directive for compiling/executing code for the Wii console. |
+| UNITY_IOS | #define directive for compiling/executing code for the iOS platform. |
+| UNITY_IPHONE | Deprecated. Use UNITY_IOS instead. |
+| UNITY_ANDROID | #define directive for the Android platform. |
+| UNITY_PS4 | #define directive for running PlayStation 4 code. |
+| UNITY_XBOXONE | #define directive for executing Xbox One code. |
+| UNITY_TIZEN | #define directive for the Tizen platform. |
+| UNITY_TVOS | #define directive for the Apple TV platform. |
+| UNITY_WSA | #define directive for Universal Windows Platform. Additionally, NETFX_CORE is defined when compiling C# files against .NET Core and using .NET scripting backend. |
+| UNITY_WSA_10_0 | #define directive for Universal Windows Platform. Additionally WINDOWS_UWP is defined when compiling C# files against .NET Core. |
+| UNITY_WINRT | Same as UNITY_WSA. |
+| UNITY_WINRT_10_0 | Equivalent to UNITY_WSA_10_0 |
+| UNITY_WEBGL | #define directive for WebGL. |
+| UNITY_FACEBOOK | #define directive for the Facebook platform (WebGL or Windows standalone). |
+| UNITY_ADS | #define directive for calling Unity Ads methods from your game code. Version 5.2 and above. |
+| UNITY_ANALYTICS | #define directive for calling Unity Analytics methods from your game code. Version 5.2 and above. |
+| UNITY_ASSERTIONS | #define directive for assertions control process. |
+
+## 2.2 Unity versions
+
+UNITY_X, UNITY_X_Y and UNITY_X_Y_Z. for any unity release version
+
+| Property: | Function: |
+| --- | --- |
+| UNITY_5 | #define directive for the release version of Unity 5, exposed in every 5.X.Y release. |
+| UNITY_5_0 | #define directive for the major version of Unity 5.0, exposed in every 5.0.Z release. |
+| UNITY_5_0_1 | #define directive for the minor version of Unity 5.0.1. |
+
+## 2.3 Others
+
+| Property: | Property: |
+| --- | --- |
+| CSHARP_7_3_OR_NEWER | Defined when building scripts with support for C# 7.3 or newer. |
+| ENABLE_MONO | Scripting backend #define for Mono. |
+| ENABLE_IL2CPP | Scripting backend #define for IL2CPP. |
+| NET_2_0 | Defined when building scripts against .NET 2.0 API compatibility level on Mono and IL2CPP. |
+| NET_2_0_SUBSET | Defined when building scripts against .NET 2.0 Subset API compatibility level on Mono and IL2CPP. |
+| NET_LEGACY | Defined when building scripts against .NET 2.0 or .NET 2.0 Subset API compatibility level on Mono and IL2CPP. |
+| NET_4_6 | Defined when building scripts against .NET 4.x API compatibility level on Mono and IL2CPP. |
+| NET_STANDARD_2_0 | Defined when building scripts against .NET Standard 2.0 API compatibility level on Mono and IL2CPP. |
+| ENABLE_WINMD_SUPPORT | Defined when Windows Runtime support is enabled on IL2CPP. See Windows Runtime Support for more details. |
+
+Note: Remember to validate the code before compiling if it’s not included in the current editor context. Or it will cause errors when building the application.
+
+It is also possible to add to the built-in selection of #define directives by supplying your own. Open the **Other Settings** panel of the Player settings and navigate to the **Scripting Define Symbols**
+ text box.
+
+# Reference
+
+[https://docs.unity3d.com/2019.1/Documentation/Manual/PlatformDependentCompilation.html](https://docs.unity3d.com/2019.1/Documentation/Manual/PlatformDependentCompilation.html)
+
+[https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/preprocessor-directives](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/preprocessor-directives)

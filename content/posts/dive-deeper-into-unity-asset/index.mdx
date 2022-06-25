@@ -1,0 +1,229 @@
+---
+title: "Dive deeper into Unity Assets"
+description: Unity assets
+date: 2022-03-25
+slug: "/blog/dive-deeper-into-unity-assets"
+tags:
+  - Code management and collaboration
+---
+
+# Dive deeper into Unity Assets
+
+# 1.Default Folders in Unity
+
+## 1.1 Folders of a Unity project
+
+There are several folders when creating a new empty project(Version 2020.3.17f):
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/ImageList.png" width = "50%" alt="Assets"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 Assets
+  	</div>
+</left>
+
+- Assets （the resources that Unity is able to deal with，only in this folder can be refered and processed in the project）
+- Library (store the resources that Unity have processed, most resources need to be transfered to a format that Unity recognize, these files will be stored in this folder, in the folder begin will the first two digits of the GUID of an asset)
+- Logs
+- Packages (For managing the packages imported to the project)
+- ProjectSettings(For storing project settings)
+    
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/projectSettings.png" width = "50%" alt="ProjectSettings"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 2 ProjectSettings
+  	</div>
+</left>    
+
+      
+
+- UserSettings
+
+When move a project, there are three folders that must be copied : **Assets**、**Packages** and **ProjectSettings.** If the project is too big, including the **Library** folder will make the process much faster
+
+## 1.2 Special Folders in “/Asset” Folder
+
+There are folder names that Unity reserves for special purposes. 
+
+### 1.2.1 **Editor**
+
+Editor scripts add functionality to Unity during development, but aren’t available in builds at runtime. Scripts in a **Editor** folder run as Editor scripts, not runtime scripts.
+
+**You can have multiple Editor folders** placed anywhere inside the Assets folder. The exact location of an Editor folder affects the time at which its scripts are compiled relative to other scripts. 
+
+Use the [EditorGUIUtility.Load](https://docs.unity3d.com/ScriptReference/EditorGUIUtility.Load.html) function in Editor scripts to load Assets from a Resources folder within an Editor folder. These Assets are only loaded through Editor scripts, and are stripped from builds.
+
+**Note:** Unity doesn’t allow components derived from MonoBehaviour to be assigned to **GameObjects** if the scripts are in the Editor folder.
+
+### 1.2.2 **Editor Default Resources**
+
+Editor scripts can make use of Asset files loaded on-demand using the [EditorGUIUtility.Load](https://docs.unity3d.com/ScriptReference/EditorGUIUtility.Load.html) function. This function looks for the Asset files in a folder called **Editor Default Resources**.
+
+**You can only have one Editor Default Resources folder and you must place it in Project root**, directly within the Assets folder. 
+
+### 1.2.3 **Gizmos**
+
+[Gizmos](https://docs.unity3d.com/ScriptReference/Gizmos.html) allow you to add graphics to the **Scene** View to help visualize design details that are otherwise invisible. The [Gizmos.DrawIcon](https://docs.unity3d.com/ScriptReference/Gizmos.DrawIcon.html) function places an icon in the Scene to act as a marker for a special object or position. You must place the image file used to draw this icon in a folder called **Gizmos** for the DrawIcon function to locate it.
+
+You can only have one Gizmos folder and it must be placed in the root of the Project, directly within the Assets folder. Place the needed Asset files in this Gizmos folder or a subfolder within it. Always include the subfolder path in the path passed to the [Gizmos.DrawIcon](https://docs.unity3d.com/ScriptReference/Gizmos.DrawIcon.html) function if your Asset files are in subfolders.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/Gizmo.png" width = "60%" alt="Gizmo UI"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 3 Gizmos UI
+  	</div>
+</left>
+
+### 1.2.4 **Resources**
+
+You can load Assets on-demand from a script instead of creating instances of Assets in a Scene for use in gameplay. You do this by placing the Assets in a folder called **Resources**. Load these Assets by using the [Resources.Load](https://docs.unity3d.com/ScriptReference/Resources.Load.html) function.
+
+You can have multiple Resources folders placed anywhere inside the Assets folder. 
+
+### 1.2.5 **StreamingAssets**
+
+You may want the Asset to be available as a separate file in its original format (although it’s more common to directly incorporate Assets into a build). For example, you need to access a video file from the filesystem to play the video on **IOS**.
+
+To include streaming Assets, do the following:
+
+1. Place the file in the StreamingAssets folder.
+2. The file remains unchanged when copied to the target machine, where it’s available from a specific folder.
+
+The location returned by `Application.streamingAssetsPath` varies per platform:
+
+- Most platforms (Unity Editor, Windows, Linux players) use `Application.dataPath + "/StreamingAssets"`,
+- macOS player uses `Application.dataPath + "/Resources/Data/StreamingAssets"`,
+- iOS uses `Application.dataPath + "/Raw"`,
+- Android uses files inside a compressed **APK**/JAR file, `"jar:file://" + Application.dataPath + "!/assets"`.
+
+You can **only have one StreamingAssets** folder and it must be placed in the root of the Project, directly within the Assets folder. 
+
+### 1.2.6 **Plugins**
+
+This is the folder for outside library files, for example, .jar, .a, .Dll files, in fact, it’s very important for custom plugins.
+
+### 1.2.7 **Android Asset Packs ***
+
+Unity interprets any folder that ends with `.androidpack` as an [Android asset pack](https://docs.unity3d.com/Manual/android-asset-packs-in-unity.html). For more information, see [Create a custom asset pack](https://docs.unity3d.com/Manual/android-asset-packs-create-custom.html).
+
+### 1.2.8 **Android Library Projects ***
+
+Unity interprets any folder that ends with `.androidlib` as an [Android Library Project](https://docs.unity3d.com/Manual/android-library-project-and-aar-plugins-introducing.html). For more information, see [Import and Android Library Project](https://docs.unity3d.com/Manual/android-library-project-import.html).
+
+### 1.2.9 **Hidden Assets**
+
+During the import process, Unity ignores the following files and folders in the **Assets** folder (or a sub-folder within it):
+
+- Hidden folders.
+- Files and folders start with ‘**.**’.
+- Files and folders end with ‘**~**’.
+- Files and folders named **cvs**.
+- Files with the extension **.tmp**.
+
+This prevents importing special and temporary files created by the operating system or other applications.
+
+# 2. Identification and reference of Assets
+
+Assets have many types. For example texture balls, texture maps, audio files, FBX files, various animations, configuration or Clip files, etc. We're used to dragging, adding, modifying, renaming, and even changing directories in Unity, but no matter how you do it in Unity (excluding deleting), those references are never lost. Why is that?
+
+## 2.1 Assets and Objects
+
+An asset is a single file or single folder that is in the Asset folder. And Objects are derived from UnityEngine.Object, it’s instances of a specific resource. Mesh、Sprite、AudioClip or AnimationClip, etc. One asset(for example a prefab) can contain multiple objects. 
+
+## 2.2 File GUIDs and fileIDs (localID)
+
+As anyone familiar with Unity knows, UnityEngine.objects can be referenced to each other. The Objects that reference each other might be in the same Asset or in different Assets. For example, an Image in the UGUI needs to reference a Sprite, which requires Unity to have a robust resource identifier that can handle reference relationships between different resources stably. In addition, Unity must consider that these resource identifiers should be platform-independent, and developers should not have to pay attention to resource references when switching platforms, as it is a cross-platform engine.
+
+The File GUID is generated by Unity in the .meta file. This locates the asset file. notice that:
+
+- The .meta file will be generated when the asset is imported to Unity for the first time.
+- When moving the asset, the .meta file will move automatically
+- When deleting the .meta file, Unity will make sure that the new one has the same GUID
+
+Apart from the GUID, there is also a fileID (localID) in the asset, it shows how an object is organized in an Asset. Here is the following example: A scene (the asset) contains a GameObject named “Test”, the Test contains a script called “Testing”, and there is an Event trigger referencing the “Testing” script.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/Hierarchy.png" width = "60%" alt="Hierarchy"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 4 The scene and it’s heirarchy
+  	</div>
+</left>   
+</br>
+</br>
+</br>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/scene.png" width = "80%" alt="scene"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 5 The .Scene file opened by txt, here we can see the name of the gameobject and it has a MonoBehaviour object attached to it.
+  	</div>
+</left>   
+</br>
+</br>
+</br>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/Test.png" width = "80%" alt="guid"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 6 The testing.cs meta stores the guid 
+  	</div>
+</left>  
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/dive-deeper-into-unity-asset/fileID.png" width = "80%" alt="fileID"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 7 When an object in an asset try to refer to some objects also from the asset, we use the fileID (localID) as a reference
+  	</div>
+</left> 
+
+
+If the GUID is changed unexpectedly, the reference will lose, in the project will perform as “Missing scripts” or pink missing material, etc.
+
+The Prefab or .Scene files or .meta files are both stored by YAML syntax, this is useful when considering Git merge and solving git conflicts in a Unity scenario. 
+
+There is also [Instance ID](https://mp.weixin.qq.com/s/0XFQt8LmqoTxxst_kKDMjw?) which can quickly locate loaded objects. But it’s not under this article’s discussion.
+
+# Reference
+
+[https://blog.uwa4d.com/archives/USparkle_Addressable1.html](https://blog.uwa4d.com/archives/USparkle_Addressable1.html)
+
+[https://mp.weixin.qq.com/s/0XFQt8LmqoTxxst_kKDMjw](https://mp.weixin.qq.com/s/0XFQt8LmqoTxxst_kKDMjw)?
+
+[https://docs.unity3d.com/Manual/SpecialFolders.html](https://docs.unity3d.com/Manual/SpecialFolders.html)
+
+[https://blog.uwa4d.com/archives/USparkle_inf_UnityEngine.html](https://blog.uwa4d.com/archives/USparkle_inf_UnityEngine.html)

@@ -1,0 +1,122 @@
+---
+title: "Git LFS"
+description: Git LFS
+date: 2022-01-25
+slug: "/blog/git-lfs"
+tags:
+  - Code management and collaboration
+---
+
+
+<left>
+    <img style="border-radius: 0.1125em;
+     box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/git-lfs/git_lfs.gif" width = "100%" alt="git_lfs.gif"/>
+    <br>
+</left>
+Git LFS does this by replacing large files in your repository with tiny *pointer* files. During normal usage, you'll never see these pointer files as they are handled automatically by Git LFS:
+
+1. When you add a file to your repository, Git LFS replaces its contents with a pointer, and stores the file contents in a local Git LFS cache.
+2. When you push new commits to the server, any Git LFS files referenced by the newly pushed commits are transferred from your local Git LFS cache to the remote Git LFS store tied to your Git repository.
+3. When you checkout a commit that contains Git LFS pointers, they are replaced with files from your local Git LFS cache, or downloaded from the remote Git LFS store.
+
+> Git LFS (Large File Storage) is a Git extension developed by Atlassian, GitHub, and a few other open-source contributors, that reduces the impact of large files in your repository by downloading the relevant versions of them *lazily*. Specifically, large files are downloaded during the checkout process rather than during cloning or fetching.
+> 
+
+# Usage
+
+```csharp
+git lfs install
+
+$ git lfs install
+Updated pre-push hook.
+Git LFS initialized.
+
+$ git lfs track "*.ogg"
+Tracking *.ogg
+
+$ git lfs track
+Listing tracked paths
+*.stl (.gitattributes)
+*.png (Assets/Sprites/.gitattributes)
+*.ogg (Assets/Audio/.gitattributes)
+
+$ git lfs ls-files
+Check all files currently tracked by lfs
+9a3c7dae41 * 1.png
+d61cf5835a * 2.png
+158213f90f * 3.svg
+
+$ git lfs untrack "1.png"
+Uncheck a specific file
+
+$ git add .gitattributes
+$ git commit -m "add .gitattributes"
+```
+
+You can also add .gitatrributes template to the local repository instead of using `git lfs track`
+
+```csharp
+## Unity gitatrributes template ##
+
+*.cs diff=csharp text
+*.cginc text
+*.shader text
+
+*.mat merge=unityyamlmerge eol=lf
+*.anim merge=unityyamlmerge eol=lf
+*.unity merge=unityyamlmerge eol=lf
+*.prefab merge=unityyamlmerge eol=lf
+*.physicsMaterial2D merge=unityyamlmerge eol=lf
+*.physicsMaterial merge=unityyamlmerge eol=lf
+*.asset merge=unityyamlmerge eol=lf
+*.meta merge=unityyamlmerge eol=lf
+*.controller merge=unityyamlmerge eol=lf
+
+## git-lfs ##
+
+#Image
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.ai filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+
+#Audio
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+
+#Video
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+
+#3D Object
+*.FBX filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.obj filter=lfs diff=lfs merge=lfs -text
+*.asset filter=lfs diff=lfs merge=lfs -text
+
+#ETC
+*.a filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.unitypackage filter=lfs diff=lfs merge=lfs -text
+*.aif filter=lfs diff=lfs merge=lfs -text
+*.ttf filter=lfs diff=lfs merge=lfs -text
+*.rns filter=lfs diff=lfs merge=lfs -text
+*.reason filter=lfs diff=lfs merge=lfs -text
+*.lxo filter=lfs diff=lfs merge=lfs -text
+```
+
+# Reference
+
+[https://gitee.com/help/articles/4235#article-header5](https://gitee.com/help/articles/4235#article-header5)
+
+[https://www.atlassian.com/git/tutorials/git-lfs](https://www.atlassian.com/git/tutorials/git-lfs)
