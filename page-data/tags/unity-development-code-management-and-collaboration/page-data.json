@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/unity-development-code-management-and-collaboration",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/unity-packages","title":"Everything about Unity Packages","date":"12.06.2022","excerpt":"1. How Unity works with packages When Unity opens a Project, the Unity Package Manager reads the Project manifest to figure out what…","timeToRead":3,"description":null,"tags":[{"name":"Unity development , Code management and collaboration","slug":"unity-development-code-management-and-collaboration"}]}]}},"pageContext":{"slug":"unity-development-code-management-and-collaboration","name":"Unity development , Code management and collaboration","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
