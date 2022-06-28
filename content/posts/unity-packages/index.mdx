@@ -1,0 +1,246 @@
+---
+title: "Everything about Unity Packages"
+date: 2022-06-12
+slug: "/blog/unity-packages"
+tags:
+  - Unity development , Code management and collaboration
+---
+
+# 1. How Unity works with packages
+
+When Unity opens a Project, the Unity Package Manager reads the Project manifest to figure out what packages to load in the Project. Then it sends a request (**2**) to the package registry server (**3**) for each package that appears as a dependency in the manifest. The package registry then sends the requested information and data back to the Package Manager (**4**), which then installs those packages (**5**) in the Project. Each Project has its own manifest which lists the packages to load as “dependencies” of the Project.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/upm-overview.png" width = "50%" alt="The roadmap for Unity registered packages"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 The roadmap for Unity registered packages
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/project-manifest.png" width = "100%" alt="all the default packages that are loaded in the project"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 2 . “Project Root \Packages\manifest.json”  shows all the default packages that are loaded in the project
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/log-file.png" width = "100%" alt="lock file for managing dependencies"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 3 Detailed info for each package “Project Root \Packages\packages-lock.json”， this is the lock file for managing dependencies
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/package-manifest.png" width = "100%" alt="details about the package"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 4 “Project Root \Library\PackageCache\Package name\manifest.json” shows more details about the package
+  	</div>
+</left>
+
+
+[Project manifest](https://docs.unity3d.com/Manual/upm-manifestPrj.html) stores information that the Package Manager needs to locate and load the right packages, including a list of packages and versions, declared as dependencies.
+
+[Package manifest](https://docs.unity3d.com/Manual/upm-manifestPkg.html) stores information about a specific package, and a list of packages and versions that the package requires.
+
+# 2. Package manager
+
+There are three ways of using the Package manager:
+
+By user interface
+
+By changing the package manifest
+
+By [script API](https://docs.unity3d.com/Manual/upm-api.html)
+
+# 3. Package dependencies
+
+When you add a package to a **project manifest**, Unity considers that package a [dependency](https://docs.unity3d.com/Manual/upm-dependencies.html) of the project (a direct dependency). However, a package can also have dependencies on other packages, which create indirect dependencies in any projects that require that package.
+
+Since most projects require more than one package in order to develop games and apps, the Package Manager has to evaluate all the requested package versions to retrieve from the registry (whether direct or indirect), and decide which among those package versions to install. To do this, it computes the set of packages that satisfies all direct and indirect dependencies in the project, starting with the project dependencies and recursively exploring each indirect dependency, collecting all the dependency information, then picking a set of packages that satisfies the dependency requirements without any conflict. For example, this dependency graph represents a project with four direct dependencies and all of their indirect dependencies:
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/dependencies.png" width = "100%" alt="Package dependencies"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 5 Package dependencies
+  	</div>
+</left>
+
+To provide the most efficient solution, the Package Manager prioritizes package versions that it previously used by tracking them in a [lock file](https://docs.unity3d.com/Manual/upm-conflicts-auto.html). This guarantees that subsequent dependency resolution using the same inputs results in the same outputs. It also minimizes time-consuming operations such as downloading, extracting, or copying packages.
+
+Using the set of direct and indirect dependencies, the Package Manager selects the highest version of the burst package (`burst@1.3.0-preview.3`), which satisfies the `collections@0.5.2-preview.8` package’s dependency:
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/dependencies-resolved.png" width = "100%" alt="Resolved Package dependencies"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 6 Resolved Package dependencies
+  	</div>
+</left>
+
+# 4. Creating Custom packages
+
+## 4.1 Package contents
+
+Packages can contain the following:
+
+- C# scripts
+- Assemblies
+- Native plugins
+- Models, Textures, animation, audio clips, and other assets.
+
+## 4.2 Steps for creating a custom packages
+
+To create a new package:
+
+1. Create an empty shell for the package using one of these methods:
+   - [Set up an embedded package](https://docs.unity3d.com/2020.3/Documentation/Manual/CustomPackages.html#EmbedMe). (recommended)
+   - [Set up a local package](https://docs.unity3d.com/2020.3/Documentation/Manual/CustomPackages.html#LocalMe).
+2. Implement your tools, libraries, and any assets your package requires.
+3. Make sure the layout of your package follows the package layout convention for Unity packages.
+4. Add [tests](https://docs.unity3d.com/2020.3/Documentation/Manual/cus-tests.html) to your package. Tests are essential for ensuring that the package works as expected in different scenarios:
+   - Write all your Editor Tests in `Tests/Editor`.
+   - Write all your Playmode Tests in `Tests/Runtime`.
+5. Rename and update the [assembly definition files](https://docs.unity3d.com/2020.3/Documentation/Manual/cus-asmdef.html).
+6. Add samples to your package, if you have them.
+   **Note**: Packages can contain only samples, but you can also include samples as part of a tool or template package using the same layout and JSON structure.
+7. You can update the `CHANGELOG.md` file every time you publish a new version. Every new feature or bug fix should have a trace in this file.
+
+   **Tip**: You can provide a link to an external web page where you host this package’s changelog using the `changelogUrl` property in your package’s `package.json` manifest file.
+
+8. You can include licenses and third-party notices in the `LICENSE.md` and `THIRD PARTY NOTICES.md` files.
+
+   **Tip**: You can provide a link to an external web page where you host this package’s licensing and third-party notices using the [`licensesUrl`](https://docs.unity3d.com/2020.3/Documentation/Manual/upm-manifestPkg.html#licensesUrl) property in your package’s `package.json` manifest file.
+
+9. Document your package.
+
+   **Tip**: You can provide a link to an external web page where you host this package’s documentation using the [`documentationUrl`](https://docs.unity3d.com/2020.3/Documentation/Manual/upm-manifestPkg.html#documentationUrl) property in your package’s `package.json` manifest file.
+
+10. Share your package via local, git, or Scope registry.
+
+## 4.3 Create a package
+
+Follow the steps to add an embedded package to the Unity project:
+
+Step1. Find the packages folder, and a new folder and name it with matches the package name(for example com.example.test). This is important for unity to find your package.
+
+Step2. Open this folder and add a “package.json” file inside. Fill in all the fields that is required and recommanded [as describe in Unity documentation](https://docs.unity3d.com/2020.3/Documentation/Manual/upm-manifestPkg.html) in this json file (also called package manifest)
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/package.png" width = "100%" alt="Custom Packages manifest"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 7 Package manifest
+  	</div>
+</left>
+
+Then you will see this
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/custom-package.png" width = "100%" alt="Custom Packages"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 8 Custom Packages
+  	</div>
+</left>
+
+## 4.4 Package Layout
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/package-layout.png" width = "80%" alt="Package Layout"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 9 Package Layout
+  	</div>
+</left>
+
+## 4.5 Change Log
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/change-log.png" width = "100%" alt="Change log info"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 10 Change log info
+  	</div>
+</left>
+
+## 4.6 Load packages
+
+There are three ways to load packages:
+
+### 4.6.1 load from disk
+
+ click the + button of the package manager, and add the package.json of the package that you want to add (cannot find any info about version control)
+
+### 4.6.2 load from git
+
+ click the + button of the package manager, add the git url（change version by hardcoding in the project manifest tag and git URL, eg: "[https://github.com/Big-Bro222/PineFieldSDK.git#1.0.0](https://github.com/Big-Bro222/PineFieldSDK.git#1.0.0)")
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-packages/git-package.png" width = "100%" alt="Loading package from git"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 11 Loading package from git
+  	</div>
+</left>
+
+### 4.6.3  load from scope registry (TBD)
+
+# Reference
+
+[How to define version in Unity](https://docs.unity3d.com/2020.3/Documentation/Manual/upm-semver.html)
+
+[https://docs.unity3d.com/2020.3/Documentation/Manual/PackagesList.html](https://docs.unity3d.com/2020.3/Documentation/Manual/PackagesList.html)
+
+[https://docs.unity3d.com/2020.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html](https://docs.unity3d.com/2020.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html)
+
+[https://docs.unity3d.com/2020.3/Documentation/Manual/upm-manifestPkg.html](https://docs.unity3d.com/2020.3/Documentation/Manual/upm-manifestPkg.html)
