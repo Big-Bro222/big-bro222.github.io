@@ -3,7 +3,7 @@ import TypeAnimation from "react-type-animation";
 export default class TypeAnim extends Component {
   render() {
     return (
-      <div>
+      <div className="p">
         <b>
           I am{" "}
           <TypeAnimation

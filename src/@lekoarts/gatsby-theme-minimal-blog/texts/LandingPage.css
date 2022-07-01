@@ -1,0 +1,21 @@
+.p{
+    font-size: 25px ;
+    line-height: 1.75;
+  }
+
+#wrapper{
+    display: flex !important;
+    flex-flow: row wrap;
+}
+
+#description{
+    width: 500px;
+    margin-bottom: 100px;
+}
+
+video{
+    width: 450px;
+    height: auto;
+}
+  
+
