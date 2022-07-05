@@ -1,0 +1,302 @@
+.Self-img {
+    width: 540px;
+    height: auto;
+    background-color: white;
+    margin-top: 20px;
+}
+
+.DownLoadButton {
+    width: 20vw!important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15vw!important;
+    height: 15vw;
+    background-color: rgb(6, 184, 255);
+    position: relative;
+    border-radius: 2vw;
+}
+
+.DownLoadButton>img{
+    width: auto;
+    height:60%;
+    margin-top: 20%;
+    margin-bottom: 20%;
+    margin-left: 27%;
+    
+}
+
+.Overlay{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .2s ease;
+    background-color: #008CBA;
+    border-radius: 2vw;
+
+  }
+
+  .DownLoadButton:hover .Overlay {
+    opacity: 0.8;
+  }
+  .Overlay>p{
+        color: white;
+        font-size:20px!important;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+      
+        font-family: 'Raleway';
+        font-weight: 1000; 
+        -webkit-text-decoration: slateblue solid underline;
+        text-decoration: slateblue solid underline;
+        -webkit-text-underline-position: under;
+        text-underline-position: under;     
+  }
+  
+
+#iconList {
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1vw;
+    margin-top: 20px;
+    height: 40px;
+    /* display: flex;
+    justify-content: space-between; */
+}
+
+.row {
+    height: inherit;
+}
+
+#button-tooltip>.tooltip-inner {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #062e56;
+}
+
+#button-tooltip>.tooltip-arrow {
+    border-top: 5px solid #062e56;
+}
+
+img.iconimg {
+    height: auto;
+    width: 15%;
+    margin-left: 7%;
+    margin-right: 7%;
+
+    margin-top: 30px;
+    opacity: 0.8
+}
+
+img.iconimg:hover {
+    transform: scale(1.4, 1.4);
+    opacity: 1;
+    transition: 0.5s;
+}
+
+.icon {
+    height: 20%;
+    width: auto;
+    margin-top: 40%;
+    /* background-color: lawngreen; */
+}
+
+.Col {
+    padding-top: 5%;
+    padding-left: 10%;
+}
+
+.Col-text {
+    /* background-color: rgb(226, 56, 34); */
+    justify-content: center;
+}
+
+h2 {
+    font-size: 24px;
+    color: #ffffff;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+p.Intro {
+    font-size: 16px!important;
+    color: #ffffff;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Anton');
+.bottomNav {
+    color: white;
+    font-family: 'Anton';
+    width: 50%;
+    font-size: 2.5vw!important;
+    font-weight: bolder;
+    -webkit-text-decoration: gray solid underline;
+    text-decoration: gray solid underline;
+    -webkit-text-underline-position: under;
+    text-underline-position: under;
+}
+
+.bottomNav:hover {
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+#CV {
+    margin-top: 40%;
+    margin-left: 40%;
+    color: teal;
+    width: 30%;
+    height: 20%;
+}
+
+
+/* TimeLine style */
+
+.timeline-area{
+    margin:0px auto;
+    width:80%;
+    border-left:3px solid #505050;
+    padding:0px 20px 0px 30px;
+}
+
+section>div{
+    background-color: rgba(255, 255, 255, 0.3);
+    padding:10px 25px;
+    font-size: 16px;
+    border: 1px solid white;
+    line-height: 1.7;
+    position: relative;
+    border-radius: 10px;
+    /* height: 100px; */
+    margin-bottom: 20px;
+}
+
+/* section>div::before{
+    content: '';
+    display: block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #000000;
+    border: 3px solid #000000;
+    z-index: 9;
+    position:absolute;
+    top:10px;
+    left:-40px;
+}
+@import url('https://fonts.googleapis.com/css?family=Raleway'); */
+
+/* #aboutme{
+background-color: #EEF3F6;
+} */
+
+div>h2{
+    color: black;
+    font-weight:600;
+    font-size: 15px!important;
+    font-family: 'Raleway';
+}
+div>h3{
+    font-size: 13px!important;
+    font-family: 'Raleway';
+
+}
+div>h4{
+    font-size: 12px!important;
+    font-family: 'Raleway';
+
+}
+
+
+@import url('https://fonts.googleapis.com/css?family=Anton');
+
+#timeline-title{
+    color: black!important;
+    font-size: 1.5vw;
+    margin:20vw auto 5vw;
+    width:80%;
+    font-family: 'Anton';
+}
+
+#Intro-title{
+    color: black!important;
+    font-size: 4vw;
+    margin:20vw auto 5vw;
+    width:80%;
+    font-family: 'Anton';
+}
+.Intro{
+    color: black!important;
+    font-size: 0.8vw;
+    margin:20vw auto 5vw;
+    width:80%;
+    font-family: 'Anton';
+}
+
+.projectlink{
+    font-family: 'Anton';
+    color: black;
+    font-size: 1.2vw!important;
+    width: fit-content;
+    display: inline-block;
+    box-shadow: inset 0em -0.5em gold; 
+}
+
+.projectlink:hover{
+    transition: 0.3s;
+    box-shadow: inset 0em -0.8em gold; 
+}
+
+#experience-title{
+    color: black!important;
+    font-size: 1.5vw;
+    font-weight: 900;
+    margin:5vw auto 2vw;
+    width:80%;
+    font-family: 'Raleway';
+}
+.experience-wrapper{
+    color: black!important;
+    margin:2vw auto 2vw;
+    width:80%;
+    font-family: 'Raleway';
+}
+
+.skill{
+    font-size: 1.2vw;
+    color: black!important;
+    -webkit-text-decoration: gray solid underline;
+    text-decoration: gray solid underline;
+    -webkit-text-underline-position: under;
+    text-underline-position: under;
+
+
+}
+
+
+.contain {
+    /* display: inline-block; */
+  }
+  .manImg {
+    margin:5vw auto 2vw;
+    width:80%;
+    display: none;
+  }
+  .hover-text:hover ~ .manImg {
+    display: block;  
+  }
+
