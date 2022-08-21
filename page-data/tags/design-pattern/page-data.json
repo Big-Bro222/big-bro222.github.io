@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/design-pattern",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/zenject/1","title":"DI in Zenject 1 (Basic concepts and Hello world)","date":"03.07.2022","excerpt":"DI in Zenject (Basic concepts and Hello world) 1. Zenject Hello world Zenject  is a lightweight highly performant DI(dependency injection…","timeToRead":3,"description":"A discussion for C# System.Collections and System.Collection.generic","tags":[{"name":"Unity development","slug":"unity-development"},{"name":"Design Pattern","slug":"design-pattern"}]}]}},"pageContext":{"slug":"design-pattern","name":"Design Pattern","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
