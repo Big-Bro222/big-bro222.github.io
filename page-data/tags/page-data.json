@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tags-query-tsx",
     "path": "/tags",
-    "result": {"data":{"allPost":{"group":[{"fieldValue":"AR/VR","totalCount":4},{"fieldValue":"C# basics","totalCount":5},{"fieldValue":"Code management and collaboration","totalCount":2},{"fieldValue":"Design Pattern","totalCount":1},{"fieldValue":"Project experience","totalCount":3},{"fieldValue":"Unity development","totalCount":4}]}},"pageContext":{}},
+    "result": {"data":{"allPost":{"group":[{"fieldValue":"AR/VR","totalCount":4},{"fieldValue":"C# basics","totalCount":5},{"fieldValue":"Code management and collaboration","totalCount":2},{"fieldValue":"Design Pattern","totalCount":2},{"fieldValue":"Project experience","totalCount":3},{"fieldValue":"Unity development","totalCount":5}]}},"pageContext":{}},
     "staticQueryHashes": ["2744905544","3090400250","318001574"]}
