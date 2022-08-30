@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Row, Col } from "react-bootstrap";
 import "./AboutMePage.css";
 
 export default class SelfIntroPage extends Component {
@@ -12,21 +11,49 @@ export default class SelfIntroPage extends Component {
   render() {
     return (
       <div id="aboutme">
-        Hi! I am Qi. As an XR enthusiastic, I participants in HoloPiano, a AR
-        prototype system for enhance piano learning experience. During my
-        internship, I focused on combining AR with monitor for improving data
-        analysis. I also explored possiblity for combining HoloLens with Leap
-        motion. Being an UX Designer, I always focus the experience of whole
-        process and details, taking a holistic approach of understanding people,
-        relationships and values. I have a solid background in Human-centered
-        design skills. I had traditional UX project as Lifinger, a in-City
-        delivery application. Also I learn how to collaborate with other
-        designers and generate new ideas and iterate through various design
-        techniques during the HCIBootcamp. As a Unity game developer, I
-        developed several mini games and Now I am working with a talented
-        designer for a Indie game "Natal". Trained as an multi-displine
-        designer, my background equipped me with design thinking mindset and
-        technical skills to understand and collaborate with team members.
+        <p>
+          你好！ Hi！ I'm Ze Qi. Currently working as a Unity developer（R&D）at
+          PineField.Inc @Beijing ,China.
+        </p>{" "}
+        <p>
+          I am an enthusiastic Unity developer passionate about XR and HCI. As a
+          developer and interaction designer, it is always stimulating for me
+          to:
+          <ul>
+            <li>Design and create awesome visual elements with Unity.</li>
+            <li>
+              Make the interaction more immersive, enhance the relationship
+              between humans and technology, and evaluate them quantitatively.
+            </li>
+            <li>
+              Handle communication between Native OS and Unity, and plugin external libraries.
+            </li>
+            <li>
+              Explore novel interaction mediums to deliver
+              a different experience in VR and AR.
+            </li>
+            <li>
+              Combine research theories to development practice and be
+              interested in new technology trends.
+            </li>
+          </ul>
+        </p>
+        <p>
+          As a person, I am:
+          <ul>
+            <li>Always curious about the world</li>
+            <li>
+              {" "}
+              A traveler who has been to over 20 countries and stayed in three
+              countries for at least one years.
+            </li>
+            <li>A quick learner, with a problem-oriented approach</li>
+          </ul>
+          I am currently learning IOS development in Swift and the basics of Machine learning
+          basics 
+          <br></br>
+          Contact info: Ze.qi@outlook.com
+        </p>
       </div>
     );
   }

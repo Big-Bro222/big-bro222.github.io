@@ -1,0 +1,426 @@
+---
+title: "DI in Zenject 2(Non-mono, SignalBus and Factory)"
+date: 2022-07-28
+slug: "/blog/zenject-2"
+tags:
+    - Unity development
+    - Design Pattern
+---
+
+
+
+
+# 1. Non-mono
+
+In some cases, it is preferable to avoid the extra weight of MonoBehaviours in favor of just normal C# classes. Zenject allows you to do this much more easily by providing interfaces that mirror functionality that you would normally need to use a MonoBehaviour for. Then you can use the Unity lifecycle without the need of attaching it to the scene. For example, the BlueTooth service start at the initialization of the game and stops when the game stop, but it doesn’t make sense to attach to the scene to fulfill the function.
+
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/zenject-2/NonMonoInterfaces.png" width = "100%" alt="Non-Mono interfaces.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure1 Non-Mono interfaces
+  	</div>
+</left>
+
+To use the interfaces above, you have to bind multiple interfaces to a single instance:
+
+```csharp
+Container.Bind(typeof(Foo), typeof(IInitializable), typeof(IDisposable)).To<Logger>().AsSingle();
+```
+
+It can be made simpler by this: 
+
+```csharp
+Container.Bind(new[] { typeof(Foo) }.Concat(typeof(Foo).GetInterfaces())).To<Foo>().AsSingle();
+```
+
+This pattern is useful enough that Zenject includes a custom bind method for it. The above code is equivalent to:
+
+```csharp
+Container.BindInterfacesAndSelfTo<Foo>().AsSingle();
+
+Container.BindInterfacesTo<Foo>().AsSingle();
+```
+
+# 2. Factory
+
+When create new objects dynamically, using the instantiate method won’t automatically bind the instance to the container, and it’s not injected to the container. The factory is there to solve this problem.
+
+The following method will get a null exception for _player, because the Player instance was never injected to the SimpleEnemy Class
+
+```csharp
+public class SimpleEnemy:MonoBehaviour
+    {
+        private Player _player;
+
+        [Inject]
+        void Constructor(Player player)
+        {
+            Debug.Log("Run constructor in mono");
+            _player = player;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                //Error: cannot find _player instance.
+                Debug.Log("Enemy " +this.GetHashCode() +"with Player "+_player.GetHashCode());
+            }
+        }
+    }
+```
+
+By implementing a Factory class which is derived from PlaceholderFactory,  the SimpleEnemy class can be instantiate by a SimpleEnemy.Factory.Create() method.
+
+```csharp
+//without parameter
+public class SimpleEnemy:MonoBehaviour
+    {
+        private Player _player;
+
+        [Inject]
+        void Constructor(Player player)
+        {
+            Debug.Log("Run constructor in mono");
+            _player = player;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Debug.Log("Enemy " +this.GetHashCode() +"with Player "+_player.GetHashCode());
+            }
+        }
+
+        public class Factory : PlaceholderFactory<SimpleEnemy>{ }
+    }
+
+public class GameLogic : MonoBehaviour
+    {
+        private Player _player;
+        private SimpleEnemy.Factory _simpleEnemyFactory;
+
+        [Inject]
+        private void Constructor(Player player,SimpleEnemy.Factory simpleEnemyFactory)
+        {
+            _player = player;
+            _simpleEnemyFactory = simpleEnemyFactory;
+        }
+        public void InstantiateEnemy()
+        {
+           SimpleEnemy enemy = _simpleEnemyFactory.Create();
+            Debug.Log("Create enemy" + enemy.name);
+        }
+    }
+
+public class GameInstaller : MonoInstaller
+    {
+        [SerializeField]
+        private SimpleEnemy simpleEnemyPrefab;
+        public override void InstallBindings()
+        {
+            Container.Bind<Player>().AsSingle();
+            //note that you have to use FromComponentInNewPrefab() or similar methods to instantiate a Mono Prefab
+            Container.BindFactory<SimpleEnemy, SimpleEnemy.Factory>().FromComponentInNewPrefab(simpleEnemyPrefab).AsSingle();
+        }
+    }
+
+public class Player
+    {
+        Player()
+        {
+            Debug.Log("Player spawned" + this.GetHashCode());
+        }
+    }
+```
+
+You can also configure parameters when call the Create() function:
+
+```csharp
+public class Enemy
+{
+    readonly Player _player;
+    readonly float _speed;
+
+    public Enemy(float speed, Player player)
+    {
+        _player = player;
+        _speed = speed;
+    }
+
+    public class Factory : PlaceholderFactory<float, Enemy>
+    {
+    }
+}
+
+public class EnemySpawner : ITickable
+{
+    readonly Enemy.Factory _enemyFactory;
+
+    public EnemySpawner(Enemy.Factory enemyFactory)
+    {
+        _enemyFactory = enemyFactory;
+    }
+
+    public void Tick()
+    {
+        if (ShouldSpawnNewEnemy())
+        {
+            var newSpeed = Random.Range(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
+            var enemy = _enemyFactory.Create(newSpeed);
+            // ...
+        }
+    }
+}
+
+public class TestInstaller : MonoInstaller
+{
+    public override void InstallBindings()
+    {
+        Container.BindInterfacesTo<EnemySpawner>().AsSingle();
+        Container.Bind<Player>().AsSingle();
+        Container.BindFactory<float, Enemy, Enemy.Factory>();
+    }
+}
+```
+
+**  The Factory pattern in Zenject can also be used for controlling a State-Machine. You can find the example of a State-Machine for SpaceShip in the First Zenject Sample Project.
+
+# 3. Signal Bus
+
+## 3.1 **Motivation / Theory**
+
+Given two classes A and B that need to communicate, your options are usually:
+
+1. Directly call a method on B from A. In this case, A is strongly coupled with B.
+2. Inverse the dependency by having B observe an event on A. In this case, B is strongly coupled with A
+
+As a third option, in some cases it might actually be better for neither one to know about the other. This way your code is kept as loosely coupled as possible. You can achieve this by having A and B interact with an intermediary object (in this case, zenject signals) instead of directly with each other.
+
+Note also that while the result will be more loosely coupled, this isn't always going to be better. Signals can be misused just like any programming pattern, so you have to consider each case for whether it's a good candidate for them or not.
+
+```csharp
+public class Greeter : IInitializable, IDisposable
+{
+    readonly SignalBus _signalBus;
+
+    public Greeter(SignalBus signalBus)
+    {
+        _signalBus = signalBus;
+    }
+
+    public void Initialize()
+    {
+        _signalBus.Subscribe<UserJoinedSignal>(OnUserJoined);
+    }
+
+    public void Dispose()
+    {
+        _signalBus.Unsubscribe<UserJoinedSignal>(OnUserJoined);
+    }
+
+    void OnUserJoined(UserJoinedSignal args)
+    {
+        SayHello(args.Username);
+    }
+
+    public void SayHello(string userName)
+    {
+        Debug.Log("Hello " + userName + "!");
+    }
+}
+
+public class GameInstaller : MonoInstaller<GameInstaller>
+{
+    public override void InstallBindings()
+    {
+        SignalBusInstaller.Install(Container);
+
+        Container.DeclareSignal<UserJoinedSignal>();
+
+        // Here, we can get away with just binding the interfaces since they don't refer
+        // to each other
+        Container.BindInterfacesTo<Greeter>().AsSingle();
+        Container.BindInterfacesTo<GameInitializer>().AsSingle();
+    }
+}
+```
+
+The signal is a class, Any parameters passed along with the signal should be added as public members or properties. For example:
+
+```csharp
+public class WeaponEquippedSignal
+{
+    public Player Player;
+    public IWeapon Weapon;
+}
+```
+
+After we have created our signal class we just need to declare it in an installer somewhere:
+
+```csharp
+Container.DeclareSignal<PlayerDiedSignal>();
+```
+
+## 3.2 **Signal Firing**
+
+To fire the signal, you add a reference to the `SignalBus` class, and then call the `Fire` method like this:
+
+```csharp
+public class UserJoinedSignal
+{
+}
+
+public class UserManager
+{
+    readonly SignalBus _signalBus;
+
+    public UserManager(SignalBus signalBus)
+    {
+        _signalBus = signalBus;
+    }
+
+    public void DoSomething()
+    {
+        _signalBus.Fire<UserJoinedSignal>();
+    }
+}
+```
+
+Or, if the signal has parameters then you will want to create a new instance of it, like this:
+
+```csharp
+public class UserJoinedSignal
+{
+    public string Username;
+}
+
+public class UserManager
+{
+    readonly SignalBus _signalBus;
+
+    public UserManager(SignalBus signalBus)
+    {
+        _signalBus = signalBus;
+    }
+
+    public void DoSomething()
+    {
+        _signalBus.Fire(new UserJoinedSignal() { Username = "Bob" });
+    }
+}
+```
+
+When `Fire()` is called, SignalBus expects the signal to be declared and exception will be thrown if the signal is not declared. If you want to call `Fire()` regardless of the signal declaration, use `TryFire()` method instead that ignores undeclared signals. You can use `TryFire()` looks like this:
+
+```csharp
+public class UserJoinedSignal
+{
+}
+
+public class UserManager
+{
+    readonly SignalBus _signalBus;
+
+    public UserManager(SignalBus signalBus)
+    {
+        _signalBus = signalBus;
+    }
+
+    public void DoSomething()
+    {
+        // Generic version
+        _signalBus.TryFire<UserJoinedSignal>(); // Nothing happens if UserJoinedSignal is NOT declared
+
+        // Non-Generic version
+        _signalBus.TryFire(new UserJoinedSignal()); // Nothing happens if UserJoinedSignal is NOT declared
+    }
+}
+```
+
+As a result of this, signals are not enabled automatically, so you have to explicitly install them yourself by calling `SignalBusInstaller.Install(Container)`
+ in one of your installers.
+
+## 3.3 abstract signal
+
+```csharp
+public class Example
+{
+SignalBus signalBus;
+public Example(Signalbus signalBus) => this.signalBus = signalBus;
+
+public void CheckpointReached() => signalBus.AbstractFire<SignalCheckpointReached>();
+
+public void CompleteLevel() => signalBus.AbstractFire<SignalLevelCompleted>();
+}
+
+public class SaveGameSystem
+{
+public SaveGameSystem(SignalBus signalBus)
+{
+signalBus.Subscribe<ISignalGameSaver>(x => SaveGame());
+}
+
+void SaveGame() { /*Saves the game*/ }
+}
+
+//in your installer
+Container.DeclareSignalWithInterfaces<SignalLevelCompleted>();
+Container.DeclareSignalWithInterfaces<SignalCheckpointReached>();
+
+//your signal types
+public struct SignalCheckpointReached : ISignalGameSaver{}
+public struct SignalLevelCompleted : ISignalGameSaver{}
+
+public interface ISignalGameSaver{}
+```
+
+## 3.4 **When To Use Signals**
+
+Signals are most appropriate as a communication mechanism when:
+
+1. There might be multiple interested receivers listening to the signal
+2. The sender doesn't need to get a result back from the receiver
+3. The sender doesn't even really care if it gets received. In other words, the sender should not rely on some state changing when the signal is called for subsequent sender logic to work correctly. Ideally signals can be thought as "fire and forget" events
+4. The sender triggers the signal infrequently or at unpredictable times
+
+Note: You can do this in Zenject out-of-the-box by executing the menu item `Edit -> Zenject -> Validate Current Scene` or simply hitting `SHIFT+ALT+V` with the scenes open that you want to validate.
+
+# 4.Example1
+
+After learning basic concepts about injection, binding, Installer, and other topics about the non-mono interface, Factory and Signal Bus, it’s sufficient to understand the first Sample that was given in the Zenject package.
+
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/zenject-2/GameInstaller.png" width = "100%" alt="Non-Mono interfaces.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 2 The architecture of Sample Game 1 in Zenject
+  	</div>
+</left>
+
+
+# Reference
+
+[https://github.com/modesttree/Zenject/blob/master/Documentation/Factories.md](https://github.com/modesttree/Zenject/blob/master/Documentation/Factories.md)
+
+[https://github.com/modesttree/Zenject](https://github.com/modesttree/Zenject)
+
+[https://erdiizgi.com/dependency-injection-unity-zenject/](https://erdiizgi.com/dependency-injection-unity-zenject/)
+
+[https://www.youtube.com/watch?v=6tn8pMQuxEk&list=PLKERDLXpXl_jNJPY2czQcfPXW4BJaGZc_&index=2](https://www.youtube.com/watch?v=6tn8pMQuxEk&list=PLKERDLXpXl_jNJPY2czQcfPXW4BJaGZc_&index=2)
+
+[https://blog.csdn.net/unity3d_xyz/category_8487718.html](https://blog.csdn.net/unity3d_xyz/category_8487718.html)
+
+[https://github.com/modesttree/Zenject/blob/master/Documentation/Signals.md](https://github.com/modesttree/Zenject/blob/master/Documentation/Signals.md)

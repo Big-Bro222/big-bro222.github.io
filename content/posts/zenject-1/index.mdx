@@ -1,0 +1,357 @@
+---
+title: "DI in Zenject 1 (Basic concepts and Hello world)"
+date: 2022-07-03
+slug: "/blog/zenject-1"
+tags:
+  - Unity develop,ent
+  - Design Pattern
+---
+
+
+
+# 1. Zenject Hello world
+
+[Zenject](https://github.com/modesttree/Zenject) is a lightweight highly performant DI(dependency injection) framework built specifically to target Unity 3D. The traditional way of handling dependency can cause a lot of issues, like referring to a single dependency repeatedly, and easy cause errors while changing a dependency.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/zenject-1/traditional_dependency.png" width = "60%" alt="Traditional Way of Dependency Management"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 1 Traditional Way of Dependency Management
+  	</div>
+</left>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/zenject-1/dependency_injection_way.png" width = "60%" alt="Dependency Injected way of dependency management"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 2 Dependency Injected way of dependency management
+  	</div>
+</left>
+
+The workflow of Zenject(and most DI framework) are as follow:
+
+- Bind the dependency into the Zenject DiContainer
+- Inject the dependency into different code blocks
+
+Just that simple.
+
+To get Zenject work for the first time, you can follow the [Hello world example](https://github.com/modesttree/Zenject#hello-world-example) from the official documentation. 
+
+If you are new to this topic, you should pause here and go to checkout the example and then come back.
+
+# 2. Zenject Inject
+
+There are four types of Zenject injections: 
+
+1 - **Constructor Injection**
+
+```csharp
+public class Foo
+{
+    IBar _bar;
+
+    public Foo(IBar bar)
+    {
+        _bar = bar;
+    }
+}
+```
+
+2 - **Field Injection**
+
+```csharp
+public class Foo
+{
+    [Inject]
+    IBar _bar;
+}
+```
+
+Field injection occurs immediately after the constructor is called. All fields that are marked with the `[Inject]` attribute are looked up in the container and given a value. Note that these fields can be private or public and injection will still occur.
+
+3 - **Property Injection**
+
+```csharp
+public class Foo
+{
+    [Inject]
+    public IBar Bar
+    {
+        get;
+        private set;
+    }
+}
+```
+
+4 - **Method Injection**
+
+```csharp
+public class Foo
+{
+    IBar _bar;
+    Qux _qux;
+
+    [Inject]
+    public void Init(IBar bar, Qux qux)
+    {
+        _bar = bar;
+        _qux = qux;
+    }
+}
+```
+
+Note the following:
+
+- Inject methods are the recommended approach for MonoBehaviours , since MonoBehaviours cannot have constructors.
+- Note however that it is usually not a good idea to use inject methods for initialization logic. Often it is better to use IInitializable.Initialize or Start() methods instead, since this will allow the entire initial object graph to be created first.
+- The best practice is to prefer constructor/method injection compared to field/property injection.
+- For further information go to check *[Introduction to Zenject API / Injection](https://github.com/modesttree/Zenject#injection)*
+
+# 3. Zenject Bind
+
+Every dependency injection framework is ultimately just a framework to bind types to instances.
+
+In Zenject, dependency mapping is done by adding bindings to something called a container. The container should then 'know' how to create all the object instances in your application, by recursively resolving all dependencies for a given object.
+
+## 3.1 Bind to container
+
+Each Zenject application therefore must tell the container how to resolve each of these dependencies, which is done via Bind commands. For example, given the following class:
+
+```csharp
+public class Foo
+{
+    IBar _bar;
+
+    public Foo(IBar bar)
+    {
+        _bar = bar;
+    }
+}
+```
+
+You can wire up the dependencies for this class with the following:
+
+```csharp
+Container.Bind<Foo>().AsSingle();
+Container.Bind<IBar>().To<Bar>().AsSingle();
+```
+
+A full type of binding options are as follow. Most of which have their default setup. More details can be found in the [documentation](https://github.com/modesttree/Zenject#binding)
+
+```csharp
+Container.Bind<ContractType>()
+    .WithId(Identifier)
+    .To<ResultType>()
+    .FromConstructionMethod()
+    .AsScope()
+    .WithArguments(Arguments)
+    .OnInstantiated(InstantiatedCallback)
+    .When(Condition)
+    .(Copy|Move)Into(All|Direct)SubContainers()
+    .NonLazy()
+    .IfNotBound();
+```
+
+tips： to get a better understanding the first time, you can use.GetHashCode to check out if the instances are the same
+
+## 3.2 Other Bindings
+
+zenject binding
+
+Yet another way to do this is to use the `ZenjectBinding` component. You can do this by adding a `ZenjectBinding` MonoBehaviour to the same game object that you want to be automatically added to the Zenject container.
+
+For example, if you have a MonoBehaviour of type `Foo` in your scene, you can just add `ZenjectBinding` alongside it, and then drag the Foo component into the Component property of the ZenjectBinding component.
+
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/zenject-1/AutoBind1.png" width = "60%" alt="Dependency Injected way of dependency management"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 3 Zenject binding script is attached directly to the gameobject
+  	</div>
+</left>
+
+
+## 3.3 Game Object Bind Methods
+
+For bindings that create new game objects (eg. `FromComponentInNewPrefab`, `FromNewComponentOnNewGameObject`, etc.) there are also two extra bind methods.
+
+- **WithGameObjectName** = The name to give the new Game Object associated with this binding.
+- **UnderTransformGroup(string)** = The name of the transform group to place the new game object under. This is especially useful for factories, which can be used to create many copies of a prefab, so it can be nice to have them automatically grouped together within the scene hierarchy.
+- **UnderTransform(Transform)** = The actual transform to place the new game object under.
+- **UnderTransform(Method)** = A method to provide the transform to use.
+
+## 3.4 Conditional Binding
+
+In many cases you will want to restrict where a given dependency is injected. You can do this using the following syntax:
+
+```csharp
+Container.Bind<IFoo>().To<Foo1>().AsSingle().WhenInjectedInto<Bar1>();
+```
+
+Note that `WhenInjectedInto` is a simple shorthand for the following, which uses the more general `When()` method:
+
+```csharp
+Container.Bind<IFoo>().To<Foo>().AsSingle().When(context => context.ObjectType == typeof(Bar));
+```
+
+The InjectContext class (which is passed as the `context`parameter above) contains a variety of information that you can use in your conditional, you can check [here](https://github.com/modesttree/Zenject#conditional-bindings) for further queries.
+
+# 4. Zenject Installer
+
+Often, there is some collections of related bindings for each sub-system and so it makes sense to group those bindings into a re-usable object. In Zenject this **re-usable** object is called an 'installer'. You can define a new installer as follows:
+
+```csharp
+public class FooInstaller : MonoInstaller
+{
+    public override void InstallBindings()
+    {
+        Container.Bind<Bar>().AsSingle();
+        Container.BindInterfacesTo<Foo>().AsSingle();
+        // etc...
+    }
+}
+```
+
+You add bindings by overriding the InstallBindings method, which is called by whatever `Context`
+ the installer has been added to (usually this is `SceneContext`). Installers are installed in the order given to `SceneContext`(with scriptable object installers first, then mono installers, then prefab installers)
+
+Because the installer is simply a collection, you can also call installer in another installer, For example (which makes the management easier):
+
+```csharp
+public class BarInstaller : Installer<BarInstaller>
+{
+    public override void InstallBindings()
+    {
+        ...
+    }
+}
+
+public class FooInstaller : MonoInstaller
+{
+    public override void InstallBindings()
+    {
+        BarInstaller.Install(Container);
+    }
+}
+```
+
+# 5. Usage of inspector in Zenject
+
+## 5.1 Using Serializable
+
+One implication of writing most of your code as normal C# classes instead of MonoBehaviour's is that you lose the ability to configure data on them using the Unity inspector. You can however still take advantage of this in Zenject by using the following pattern:
+
+```csharp
+using System;
+using UnityEngine;
+using Zenject;
+
+namespace zenject.nonmonobehaviour
+{
+    public class ZenjectNonMonobehaviour : MonoInstaller<ZenjectNonMonobehaviour>
+    {
+        public ZenjectInspector.Settings Settings;
+
+        public override void InstallBindings()
+        {
+            //The first way to expose the settings in the inspector
+            //Container.BindInstance(Settings);
+            //Container.BindInterfacesTo<ZenjectInspector>().AsSingle().NonLazy();
+
+            //The second way to expose the settings in the inspector
+            Container.BindInterfacesTo<ZenjectInspector>().AsSingle().WithArguments(Settings);
+        }
+    }
+
+    public class ZenjectInspector : ITickable
+    {
+        private Settings mSettings;
+
+        public ZenjectInspector(Settings settings)
+        {
+            this.mSettings = settings;
+        }
+
+        public void Tick()
+        {
+            Debug.Log("Speed:" + mSettings.Speed);
+        }
+
+        [Serializable]
+        public class Settings
+        {
+            public float Speed;
+        }
+    }
+}
+```
+
+## 5.2 Using Scriptable Object Installer
+
+- Open Unity
+- Right click somewhere in the Project tab and select `Create -> Zenject -> ScriptableObjectInstaller`
+- Name it GameSettingsInstaller
+- Right click again in the same location
+- Select the newly added menu item `Create -> Installers -> GameSettingsInstaller`
+
+```csharp
+public class GameSettings : ScriptableObjectInstaller
+{
+    public Player.Settings Player;
+    public SomethingElse.Settings SomethingElse;
+    // ... etc.
+
+    public override void InstallBindings()
+    {
+        Container.BindInstances(Player, SomethingElse, etc.);
+    }
+}
+
+public class Player : ITickable
+{
+    readonly Settings _settings;
+    Vector3 _position;
+
+    public Player(Settings settings)
+    {
+        _settings = settings;
+    }
+
+    public void Tick()
+    {
+        _position += Vector3.forward * _settings.Speed;
+    }
+
+    [Serializable]
+    public class Settings
+    {
+        public float Speed;
+    }
+}
+```
+
+Bind , Installer and inject are the most important concepts in Zenject. In the next post, I will talk about Non-mono Classes, Signal bus for event handling, and Factory. 
+
+# Reference
+
+[https://github.com/modesttree/Zenject](https://github.com/modesttree/Zenject)
+
+[https://erdiizgi.com/dependency-injection-unity-zenject/](https://erdiizgi.com/dependency-injection-unity-zenject/)
+
+[https://www.youtube.com/watch?v=6tn8pMQuxEk&list=PLKERDLXpXl_jNJPY2czQcfPXW4BJaGZc_&index=2](https://www.youtube.com/watch?v=6tn8pMQuxEk&list=PLKERDLXpXl_jNJPY2czQcfPXW4BJaGZc_&index=2)
+
+[https://blog.csdn.net/unity3d_xyz/category_8487718.html](https://blog.csdn.net/unity3d_xyz/category_8487718.html)
