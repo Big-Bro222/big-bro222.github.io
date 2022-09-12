@@ -46,7 +46,9 @@ export default class MRVis extends Component {
               and drawbacks of combining MR with Digital display. To Check more
               information about this, you can have a look at my blog:
               <a href="/blog/masterthesis/1">
-                Design Space initial implementation(Master Thesis Part1)
+                <text className="link">
+                  Design Space initial implementation(Master Thesis Part1)
+                </text>
               </a>
             </p>
             <div className="singlewrapper">
@@ -100,7 +102,9 @@ export default class MRVis extends Component {
               </ul>
               For more detail of the development of Virtual room:
               <a href="/blog/masterthesis/2">
-                Remote User testing Setup(Master Thesis Part2)
+                <text className="link">
+                  Remote User testing Setup(Master Thesis Part2)
+                </text>
               </a>
             </p>
             <div className="doublewrapper">
@@ -145,7 +149,9 @@ export default class MRVis extends Component {
               please read my blog for more details of the design and
               implementation:
               <a href="/blog/masterthesis/3">
-                Resize and Interact with Mouse(Master Thesis Part3)
+                <text className="link">
+                  Resize and Interact with Mouse(Master Thesis Part3)
+                </text>
               </a>
             </p>
             <div className="video-wrapper">

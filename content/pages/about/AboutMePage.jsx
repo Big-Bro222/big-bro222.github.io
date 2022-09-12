@@ -11,8 +11,9 @@ export default class SelfIntroPage extends Component {
   render() {
     return (
       <div id="aboutme">
+        <h2>你好！ Hi！</h2>
         <p>
-          你好！ Hi！ I'm Ze Qi. Currently working as a Unity developer（R&D）at
+          I'm Ze Qi. Currently working as a Unity developer（R&D）at
           PineField.Inc @Beijing ,China.
         </p>{" "}
         <p>
@@ -52,7 +53,7 @@ export default class SelfIntroPage extends Component {
           I am currently learning IOS development in Swift and the basics of Machine learning
           basics 
           <br></br>
-          Contact info: Ze.qi@outlook.com
+          Contact info: <text className="link">Ze.qi@outlook.com</text>
         </p>
       </div>
     );

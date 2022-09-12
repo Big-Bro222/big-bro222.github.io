@@ -3,10 +3,11 @@
     line-height: 1.75;
   }
 
-#wrapper{
+.wrapper{
     display: flex !important;
     flex-flow: row wrap;
 }
+
 
 #description{
     width: 500px;

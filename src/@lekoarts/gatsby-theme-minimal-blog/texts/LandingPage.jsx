@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import TypeAnim from "./TypeAnim.jsx";
 import "./LandingPage.css";
-import ReactPlayer from "react-player";
 import VideoBackground from './VideoProject.mp4'
 
 export class LandingPage extends Component {
@@ -37,7 +36,7 @@ export class LandingPage extends Component {
     }
 
     return (
-      <div id="wrapper">
+      <div className ="wrapper">
         <div id="description">
           <div className="p">{test}</div>
           <div className="p">I'm Qi. Welcome to my blog.</div>
