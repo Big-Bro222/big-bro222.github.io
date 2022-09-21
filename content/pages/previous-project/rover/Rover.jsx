@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import "../../../../src/ProjectStyle.css";
+import "../../ProjectStyle.css"
 
 export default class Rover extends Component {
   render() {
     return (
-      <div>
+      <div className="Fix">
         <div id="Home"></div>
         <img
           src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/projects/Rover/Portfolio_01.png"

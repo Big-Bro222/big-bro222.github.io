@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import "../../../../src/ProjectStyle.css";
+import "../../ProjectStyle.css"
 
 export default class DesignPractice extends Component {
     render() {

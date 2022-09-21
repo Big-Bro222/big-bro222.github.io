@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
-import "../../../../src/ProjectStyle.css";
+import "../../ProjectStyle.css";
+
 
 export default class MRVis extends Component {
   constructor(props) {

@@ -3,9 +3,11 @@
     line-height: 1.75;
   }
 
-.wrapper{
+  .wrapper{
     display: flex !important;
     flex-flow: row wrap;
+    padding: 0!important;
+    border: 0!important;
 }
 
 

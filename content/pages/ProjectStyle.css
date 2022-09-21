@@ -1,0 +1,176 @@
+div.absolute{
+    position: relative;
+}
+
+img.UIWideImage {
+    width: 100%;
+    height: auto;
+}
+
+div.Fix{
+    padding: 0!important;
+    border: 0!important;
+}
+
+
+div.section {
+    
+    padding-top: 50px;
+    padding-bottom: 50px;
+    display: inline-block;
+    width: 100%;
+} 
+div#imagevideo{
+    position: absolute;
+    top: 5%;
+    left: 18%;
+    width: 47%;
+    z-index: 10;
+}
+
+
+p.Figurediscriptiondouble {
+    color:rgb(88, 88, 88);
+    text-align: left;
+    margin-left: 5%;
+}
+
+div.doublewrapper {
+    width: 100%;
+    margin: 0 auto;
+}
+
+div.singlewrapper {
+    width: 100%;
+    margin: 0 auto;
+}
+
+img.double {
+    width: 40%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    height: auto;
+}
+
+img.WideImage {
+    margin-top: 30px;
+    width: 100%;
+    height: auto;
+}
+
+
+
+div.test {
+    background-color: lawngreen;
+    width: 60%;
+    display: inline-block;
+    text-align: left;
+}
+.DownLoadButton {
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+}
+.designimage {
+    margin-top: 2vw;
+    margin-bottom: 2vw;
+    width: 55%;
+    height: auto;
+    z-index: 1;
+}
+
+
+div.ImageBlock-Wrapper{
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+
+div.ImageBlock-Project{
+    display: inline-block;
+    width: 30%;
+    padding: 20px;
+}
+
+img.ImageBlock{
+    width: 100%;
+}
+
+p.ImageBlock{
+    text-align: left;
+    color: #bebebe;
+
+}
+
+
+.LeftImage{
+    height: 40vw;
+    text-align: right;
+    width: auto;
+}
+.RightImage{
+    height: 20vw;
+    width: auto;
+}
+
+div.DesignBackground {
+    text-align: center;
+    background-color: #EEF3F6;
+}
+
+.video-wrapper {
+    width: 100%;
+    background-color: #000044;
+    display: inline-block;
+    text-align: center;
+}
+
+.video {
+    display: inherit;
+    width: 100%;
+    height: auto;
+}
+
+
+
+
+p.description {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+p.description-Role{
+    font-weight: 700;
+
+}
+p.Figurediscription {
+    color: rgb(88, 88, 88);
+    text-align: left;
+}
+
+
+
+div#imagescroll{
+    position: absolute;
+    top: 51%;
+    left: 47%;
+    width: 37%;
+    z-index: 10;
+}
+
+div#imagescollab{
+    position: absolute;
+    top: 18%;
+    left: 47%;
+    width: 37%;
+    z-index: 10;
+}
+.videoParent {
+    margin: 10px;
+} 

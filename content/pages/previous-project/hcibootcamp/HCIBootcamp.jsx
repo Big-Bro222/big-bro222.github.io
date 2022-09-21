@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
-import "../../../../src/ProjectStyle.css";
+import "../../ProjectStyle.css"
+
 
 export default class HCIBootcamp extends Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class HCIBootcamp extends Component {
     return (
       <div>
         <div id="Home"></div>
-        <div className="Content">
+        <div className="Fix">
           <div className="section ">
             <h1 className="title"> Breakdown Analysis </h1>
             <p className="description">
