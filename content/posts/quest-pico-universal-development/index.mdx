@@ -1,0 +1,142 @@
+---
+title: "Pico and Oculus Universal development"
+date: 2022-09-22
+slug: "/blog/pico-oculus-dev"
+tags:
+  - AR/VR
+  - Unity development
+---
+
+The unity version of this article is Unity2021.3.8f1c1
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/Cover.png" width = "100%" alt="Cover"/>
+    <br>
+</left>
+
+# 1. Device Selection
+
+Recently, I have been assigned to develop a VR exhibition application for the [ZGC Forum](https://www.zgcforum.com.cn/en/index.html). The task includes developing a VR application and projecting it to the TV. So I did research on this topic and the result is as follows:
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/DeviceSelection.png" width = "100%" alt="Device Selection"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 1 Device Selection
+  	</div>
+</left>
+
+Pico Neo3 only support VR solution for steam VR when connecting with PC and supports development with Unity XR interaction toolkit running on the device. While Oculus Quest with Unity XR interaction toolkit(XRI toolkit) supports running on the device and running as Oculus Link on PC.
+
+Considering the requirement of building an application that is suitable for both Oculus quest2 and Pico Neo3, we finally decided to use the Unity XRI toolkit.
+
+It’s making use of the new Input system for universal control(which in my opinion is beneficial eventually but painful to learn because of the concept of the Unity Input System).
+
+It provides the following basic functionalities :
+
+- Locomotion(Teleportation, Continues Move, Turn)
+- UI system for 3D
+- Interaction with Objects
+- Character controllers
+
+I guess the most disadvantage for me right now is that the XR toolkit doesn’t support Oculus-specific functions. For example:
+
+- Hand tracking
+- Pass through
+- Shader based avatars (which is styleished and optimized for VR)
+- Animations while pressing buttons
+
+But one thing that XRI toolkit does better is that Oculus integration don’t have [Device simulator](https://www.youtube.com/watch?v=d4bTpkvBwrs) for hands interaction.
+
+# 2.Setup
+
+## 2.1 Packages installation
+
+Unity XRI toolkit is fairly new at this point (2022), it takes some time to get a new project running properly.
+
+To get started for the universal development of Pico and Oculus, packages should be installed:
+
+- new input system,
+- openXR
+- oculus XR plugin
+- XR interaction toolkit
+- XR plugin management
+- Pico XR integration(download from Pico official website)
+- Oculus integration(from Asset store)
+
+Note: You have to import Pico integration before Oculus integration to Avoid a .dll conflict.
+
+## 2.2 Configue User settings
+
+If you Add a XROrign (which is in the **GameObject > XR > XROrigin** ) at this moment, the XRController script wouldn’t know how to map the device buttons with the in-Game logics. (So don’t add it right now)
+
+Luckily, Unity provides a Starter Asset Sample for the XR interaction toolkit. Import the Sample Called Starter Assets, and attach an Input Action Manger component to any objects and assign XRI Default Input Actions.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/StarterAssets.png" width = "100%" alt="Input system XR Sample"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 2 Input system XR Sample
+  	</div>
+</left>
+
+Then go to the project Settings to configue some preset as the following picture.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/PresetManager.png" width = "100%" alt="Traditional Way of Dependency Management"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+     Figure 3 Preset Manager
+  	</div>
+</left>
+
+Now, everything should be working. Add the XR origin on the scene and assign prefabs to the Left and Right Hand Controllers. To get start with Unity XR development, you can also see the [XR toolkit example](https://github.com/Unity-Technologies/XR-Interaction-Toolkit-Examples) to get more inspiration. At this point, you can already develop and debug through Unity Editor using Oculus Link and deploy a functional application on BOTH Pico Neo3 and Oculus Quest2 Devices
+
+# 3. Adding Oculus-Specific functionalities (TBD)
+
+Then an idea comes to my mind: What if I only using XR interaction toolkit to manage interactions and locomotion, but use Oculus integration to track device position ? Then I can add hand tracking functions and additional function like passthrough to the project.
+
+So I add an OVRCameraRig to the scene. And copied the `LeftHandController` and `RightHandController` GameObject as a Child of the `LeftHandAnchor` and `RightHandAnchor` GameObject. Then disable the Input Tracking functions for XR Controller. After that , add XR Origin component to the OVRCameraRig to enable teleportation and Continues movement.
+
+The last part would be check if the Controllers are detectable and change the visiblity according to this. Detect if it’s Oculus device during `Awake()`, and switch between XROrigin and OVRCameraRig accordingly. The main difference is that both devices can use the same environment and interactables logic.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/HandConfigue.png" width = "50%" alt="HandConfigue"/>
+    <br>
+</left>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/XRController.png" width = "50%" alt="Traditional Way of Dependency Management"/>
+    <br>
+</left>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/quest-pico-universal-development/XROrigin.png" width = "60%" alt="Traditional Way of Dependency Management"/>
+    <br>
+</left>
+
+# Reference
+
+[https://github.com/Unity-Technologies/XR-Interaction-Toolkit-Examples](https://github.com/Unity-Technologies/XR-Interaction-Toolkit-Examples)
+
+[https://portal.productboard.com/brs5gbymuktquzeomnargn2u/tabs/8-xr-interaction-toolkit](https://portal.productboard.com/brs5gbymuktquzeomnargn2u/tabs/8-xr-interaction-toolkit)
+
+[https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@2.1/manual/general-setup.html](https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@2.1/manual/general-setup.html)
