@@ -24,7 +24,8 @@ export default class MRVis extends Component {
               identify challenges in placing and understanding information in
               immersive visual analytics, in particular combining AR with
               external displays. Also, this project provides a solution for
-              conducting remote study using HoloLens.
+              conducting remote study using HoloLens. <b>( A short overview of this project
+              starts from 0:18 )</b>
             </p>
             <div className="video-wrapper">
               <ReactPlayer

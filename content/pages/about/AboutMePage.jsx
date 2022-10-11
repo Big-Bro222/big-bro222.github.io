@@ -13,8 +13,8 @@ export default class SelfIntroPage extends Component {
       <div id="aboutme">
         <h2>你好！ Hi！</h2>
         <p>
-          I'm Ze Qi. Currently working as a Unity developer（R&D）at
-          PineField.Inc @Beijing ,China.
+          I'm Ze Qi. Currently working as a Unity developer（R&D）at {" "}
+          <a href="http://pinefield.cn/"  target="_blank"><text className="link">PineField.Inc</text></a> @Beijing ,China.
         </p>{" "}
         <p>
           I am an enthusiastic Unity developer passionate about XR and HCI. As a
@@ -31,11 +31,11 @@ export default class SelfIntroPage extends Component {
             </li>
             <li>
               Explore novel interaction mediums to deliver
-              a different experience in VR and AR.
+              different experiences in VR and AR.
             </li>
             <li>
-              Combine research theories to development practice and be
-              interested in new technology trends.
+              Combine research theories to development practice and follow
+              new technology trends.
             </li>
           </ul>
         </p>
@@ -50,7 +50,7 @@ export default class SelfIntroPage extends Component {
             </li>
             <li>A quick learner, with a problem-oriented approach</li>
           </ul>
-          I am currently learning IOS development in Swift and the basics of Machine learning
+          I am currently learning IOS development in Swift and Machine learning
           basics 
           <br></br>
           Contact info: <text className="link">Ze.qi@outlook.com</text>
