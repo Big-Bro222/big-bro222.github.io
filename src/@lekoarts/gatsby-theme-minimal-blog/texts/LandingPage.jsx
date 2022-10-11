@@ -42,7 +42,7 @@ export class LandingPage extends Component {
           <div className="p">I'm Qi. Welcome to my blog.</div>
           <TypeAnim />
         </div>
-        <video className="videobackground" autoPlay loop muted>
+        <video className="videobackground" autoPlay loop muted onContextMenu={(e)=> e.preventDefault()}>
           <source src={VideoBackground} type="video/mp4" />
         </video>
       </div>
