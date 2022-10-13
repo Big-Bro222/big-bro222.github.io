@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
 import "../../ProjectStyle.css";
+import { Player, Controls } from "@lottiefiles/react-lottie-player";
+import lottie from './enjoying-sloth.json'
 
 export default class Pineverse extends Component {
   render() {
@@ -19,6 +21,14 @@ export default class Pineverse extends Component {
             />
           </div>
         </div>
+        <Player
+          autoplay
+          loop
+          src={lottie}
+          style={{ height: "300px", width: "300px" }}
+          speed={0.6}
+        >
+        </Player>
         <h3>this page is under construction, stay tuned ...</h3>
       </div>
     );

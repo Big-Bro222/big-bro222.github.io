@@ -46,7 +46,7 @@ export default class MRVis extends Component {
               position a potential design based on its characteristics. We first
               built eight different MR Visaulizations to explore the benefits
               and drawbacks of combining MR with Digital display. To Check more
-              information about this, you can have a look at my blog:
+              information about this, you can have a look at my blog:{` `}
               <a href="/blog/masterthesis/1">
                 <text className="link">
                   Design Space initial implementation(Master Thesis Part1)
@@ -102,7 +102,7 @@ export default class MRVis extends Component {
                 <li>Access to user interaction event</li>
                 <li>Log and replay user behavior</li>
               </ul>
-              For more detail of the development of Virtual room:
+              For more detail of the development of Virtual room:{` `}
               <a href="/blog/masterthesis/2">
                 <text className="link">
                   Remote User testing Setup(Master Thesis Part2)
@@ -149,7 +149,7 @@ export default class MRVis extends Component {
               which sends mouse event to HoloLens through network and enable
               useing mouse interaction and hand interaction at the same time.
               please read my blog for more details of the design and
-              implementation:
+              implementation:{` `}
               <a href="/blog/masterthesis/3">
                 <text className="link">
                   Resize and Interact with Mouse(Master Thesis Part3)
