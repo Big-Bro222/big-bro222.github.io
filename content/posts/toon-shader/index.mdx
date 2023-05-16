@@ -1,0 +1,723 @@
+---
+title: "Toon Shaders"
+description: thing learnt when implementing toon Shaders
+date: 2023-02-03
+slug: "/blog/toon-shader"
+tags:
+  - Unity developments
+  - Shader Effects
+  - Graphics
+---
+
+**Toon shading** (often called *cel shading*) is a rendering style designed to make 3D surfaces emulate 2D, flat surfaces. This is a kind of NPR(Non-Photorealistic Rendering).The core concept of this shading technique is to have sharp diffuse edge and sharp specular reflections and also an Outline.
+
+# 1. How to write a simple toon shader with unlit shader
+
+## 1.1 Diffuse
+
+``` glsl
+//Diffuse light steps
+ float difLight=dot(worldLightDir,i.worldNormal)*0.5+0.5;
+ difLight = smoothstep(0,1,difLight);
+ float toon=floor(difLight*_Steps)/_Steps;
+ difLight=lerp(difLight,toon,_ToonEffect);
+ fixed3 diffuse=_LightColor0.rgb*albedo*_DiffuseColor.rgb*difLight;
+```
+
+## 1.2 Specular
+
+The specular calculation of Blinn-Phong light model is to to use the dot product of vertex normal and the middle angle of lightdir and viewdir (halfdir)
+
+```glsl
+//halfDir is the middle angle of lightdir and viewdir
+//_Gloss is a factor to controll specular strength
+float spec=pow(max(0,dot(normal,halfDir)),_Gloss)
+
+```
+
+But for toon shading, we skip the Gloss power and compare the dot product with a threshold using the step function. If the dot product is greater than the threshold the specular is 1, otherwise is 0
+
+```glsl
+float spec=dot(normal,halfDir);
+spec = step(threshold,spec);
+```
+
+## 1.3 Rim
+
+Rim is related to the angle of view dir and vertex normal dir. 
+
+Rim lighting is the addition of illumination to the edges of an object to simulate reflected light or backlighting. It is especially useful for toon shaders to help the object's silhouette stand out among the flat shaded surfaces.
+
+The "rim" of an object will be defined as surfaces that are facing *away* from the camera. We will therefore calculate the rim by taking the dot product of the normal and the view direction, and *inverting* it.
+
+```glsl
+float rimIntensity = smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, rimDot);
+float4 rim = rimIntensity * _RimColor;
+```
+
+## 1.4 Outline
+
+To render an outline, here we are using a simple method: to add an additional pass and add an outline offset and then draw the normal object on the top of this pass
+
+```glsl
+//1.object normal extrusion
+v.vertex.xyz+=_Outline*v.normal;
+o.vertex = UnityObjectToClipPos(v.vertex);
+
+//2.view space normal extrusion
+float4 pos = mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, v.vertex));
+float3 normal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV,v.normal));
+pos = pos + float4(normal,0) * _Outline;
+o.vertex =  mul(UNITY_MATRIX_P, pos);
+
+//3.clip space normal extrusion
+o.vertex = UnityObjectToClipPos(v.vertex);
+float3 normal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
+float2 viewNormal = TransformViewToProjection(normal.xy);
+o.vertex.xy += viewNormal * _Outline;
+```
+<br></br>
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/toon-shader/ToonShader.png" width = "50%" alt="Assets"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 Simple toon shader
+  	</div>
+</left>
+
+
+here is a full version of the toon shader based on vertex and fragment shader
+
+```glsl
+Shader "Toon/ToonShader"
+{
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+        _DiffuseColor("Diffuse",Color)=(1,1,1,1)
+        _Outline("Outline Width",Range(0,1))=1
+        _OutlineColor("Outline Color",Color)=(0,0,0,1)
+        _Steps("Steps",Range(1,30)) = 1
+        _ToonEffect("ToonEffect", Range(0,1)) = 0.5
+        _Specular("Specular Color",Color)=(1,1,1,1)
+        _SpecularScale("Specular Scale",Range(0.0001,3))=1
+        _RimColor("Rim Light Color",Color)=(1,1,1,1)
+        _RimPower("Rim Strength", Range(0.00000001,3))=1
+        _XRayColor("Oculusion Color",Color)=(1,1,1,1)
+        _XRayPower("XRay Power",Range(0.0001,3))=1
+    }
+    SubShader
+    {
+        Tags
+        {
+            "Queue"= "Geometry+1000" "RenderType"="Opaque"
+        }
+        LOD 100
+        Pass
+        {
+            Name "Outline"
+            Cull Front
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 vertex : SV_POSITION;
+            };
+
+            float _Outline;
+            fixed4 _OutlineColor;
+            float _Steps;
+            float _ToolEffect;
+
+            v2f vert(appdata_base v)
+            {
+                v2f o;
+                //物体法线外扩
+                //v.vertex.xyz+=_Outline*v.normal;
+                //o.vertex = UnityObjectToClipPos(v.vertex);
+
+                //视角空间法线外拓
+                //float4 pos = mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, v.vertex));
+                //float3 normal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV,v.normal));
+                //pos = pos + float4(normal,0) * _Outline;
+                //o.vertex =  mul(UNITY_MATRIX_P, pos);
+
+                //裁剪空间法线外拓
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                float3 normal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
+                float2 viewNormal = TransformViewToProjection(normal.xy);
+                o.vertex.xy += viewNormal * _Outline;
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                return _OutlineColor;
+            }
+            ENDCG
+        }
+
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float2 uv : TEXCOORD0;
+                fixed3 worldNormal:TEXCOORD1;
+                fixed3 worldPos:TEXCOORD2;
+            };
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            float4 _DiffuseColor;
+            float _Steps;
+            float _ToonEffect;
+            fixed4 _RimColor;
+            float _RimPower;
+            float _SpecularScale;
+            fixed4 _Specular;
+
+            v2f vert(appdata_base v)
+            {
+                v2f o;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, o.pos);
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                // sample the texture
+                fixed4 albedo = tex2D(_MainTex, i.uv);
+                fixed3 worldLightDir = UnityWorldSpaceLightDir(i.worldPos);
+
+                //view Direction
+                fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+
+                //Diffuse light steps
+                float difLight = dot(worldLightDir, i.worldNormal) * 0.5 + 0.5;
+                difLight = smoothstep(0, 1, difLight);
+                float toon = floor(difLight * _Steps) / _Steps;
+                difLight = lerp(difLight, toon, _ToonEffect);
+                fixed3 diffuse = _LightColor0.rgb * _DiffuseColor.rgb * difLight;
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+
+                fixed3 halfDir = normalize(worldLightDir + viewDir);
+                float spec = dot(i.worldNormal, halfDir);
+                fixed w = fwidth(spec) * 2.0;
+                fixed3 specular = _Specular.rgb * lerp(0, 1, smoothstep(-w, w, spec + _SpecularScale - 1)) * step(
+                    0.0001, _SpecularScale);
+
+                /*float rim = 1 - dot(i.worldNormal, viewDir);
+                fixed3 rimColor = _RimColor * pow(rim, 1 / _RimPower);*/
+                float rimdot = 1 - dot(i.worldNormal, viewDir);
+                float rimIntensity = smoothstep(_RimPower - 0.01, _RimPower + 0.01, rimdot);
+                float4 rim = rimIntensity * _RimColor;
+                return float4(ambient + diffuse + specular + rim, 1);
+            }
+            ENDCG
+        }
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ShadowCaster"
+            }
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma multi_compile_shadowcaster
+            #include "UnityCG.cginc"
+
+            struct v2f
+            {
+                V2F_SHADOW_CASTER;
+            };
+
+            v2f vert(appdata_base v)
+            {
+                v2f o;
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                return o;
+            }
+
+            float4 frag(v2f i) : SV_Target
+            {
+                SHADOW_CASTER_FRAGMENT(i)
+            }
+            ENDCG
+        }
+
+    }
+}
+```
+
+# 2. Toon effect in Surface shader
+
+we can also use Surface shader to implement the toon effect. The main difference is that we need to customize the [LightMode](https://docs.unity3d.com/Manual/SL-SurfaceShaderLightingExamples.html) in Surface shader to achieve this. And the base calculation are similar to the unlit shader. Surface shader enable easier and fast implementation of shadow casting and multiple lights handle
+
+```glsl
+        //our lighting function. Will be called once per light
+        float4 LightingStepped(SurfaceOutput s, float3 lightDir, half3 viewDir, float shadowAttenuation){
+            //how much does the normal point towards the light?
+            float towardsLight = dot(s.Normal, lightDir);
+            // make the lighting a hard cut
+            float towardsLightChange = fwidth(towardsLight);
+            float lightIntensity = smoothstep(0, towardsLightChange, towardsLight);
+
+        #ifdef USING_DIRECTIONAL_LIGHT
+            //for directional lights, get a hard vut in the middle of the shadow attenuation
+            float attenuationChange = fwidth(shadowAttenuation) * 0.5;
+            float shadow = smoothstep(0.5 - attenuationChange, 0.5 + attenuationChange, shadowAttenuation);
+        #else
+            //for other light types (point, spot), put the cutoff near black, so the falloff doesn't affect the range
+            float attenuationChange = fwidth(shadowAttenuation);
+            float shadow = smoothstep(0, attenuationChange, shadowAttenuation);
+        #endif
+            lightIntensity = lightIntensity * shadow;
+
+            //calculate shadow color and mix light and shadow based on the light. Then taint it based on the light color
+            float3 shadowColor = s.Albedo * _ShadowTint;
+            float4 color;
+            color.rgb = lerp(shadowColor, s.Albedo, lightIntensity) * _LightColor0.rgb;
+            color.a = s.Alpha;
+            return color;
+        }
+```
+<br></br>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/toon-shader/ToonShaderSurface.png" width = "50%" alt="Assets"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 2 Surface toon shader
+  	</div>
+</left>
+
+Multiple lights and cast shadow
+
+The full shader script is as follow
+
+```glsl
+Shader "Toon/ToonShaderSurfaceBigBro"
+{
+    Properties
+    {
+        _Color ("Color", Color) = (1,1,1,1)
+        _MainTex ("Albedo (RGB)", 2D) = "white" {}
+        _Outline("Outline Width",Range(0,1))=1
+        _OutlineColor("Outline Color",Color)=(0,0,0,1)
+        _Steps("Steps",Range(1,30)) = 1
+        _ToonEffect("ToonEffect", Range(0,1)) = 0.5
+        _DiffuseColor("Diffuse",Color)=(1,1,1,1)
+        _Specular("Specular Color",Color)=(1,1,1,1)
+        _SpecularScale("Specular Scale",Range(0.0001,3))=1
+    }
+    SubShader
+    {
+        Tags
+        {
+            "RenderType"="Opaque"
+        }
+        LOD 200
+        Pass
+        {
+            Name "Outline"
+            Cull Front
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 vertex : SV_POSITION;
+            };
+
+            float _Outline;
+            fixed4 _OutlineColor;
+
+            v2f vert(appdata_base v)
+            {
+                v2f o;
+                //裁剪空间法线外拓
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                float3 normal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
+                float2 viewNormal = TransformViewToProjection(normal.xy);
+                o.vertex.xy += viewNormal * _Outline;
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                return _OutlineColor;
+            }
+            ENDCG
+        }
+
+        CGPROGRAM
+        #pragma surface surf Toon addshadow
+
+        float4 _DiffuseColor;
+        fixed4 _Color;
+        float _Steps;
+        float _ToonEffect;
+        float _SpecularScale;
+        fixed4 _Specular;
+
+        half4 LightingToon(SurfaceOutput s, half3 lightDir, half3 viewDir, half atten)
+        {
+            //Diffuse light steps
+            float difLight = dot(lightDir, s.Normal) * 0.5 + 0.5;
+            difLight = smoothstep(0, 1, difLight);
+            float toon = floor(difLight * _Steps) / _Steps;
+            difLight = lerp(difLight, toon, _ToonEffect);
+            fixed3 diff = _LightColor0.rgb * _DiffuseColor.rgb * difLight;
+
+            fixed3 halfDir = normalize(lightDir + viewDir);
+            float spec = dot(s.Normal, halfDir);
+            fixed w = fwidth(spec) * 2.0;
+            fixed3 specular = _Specular.rgb * lerp(0, 1, smoothstep(-w, w, spec + _SpecularScale - 1)) * step(
+                0.0001, _SpecularScale);
+
+            fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * _Color;
+
+            //custom shadow
+            #ifdef USING_DIRECTIONAL_LIGHT
+            float attenuationChange = fwidth(atten) * 0.5;
+            float shadow = smoothstep(0.5 - attenuationChange, 0.5 + attenuationChange, atten);
+            #else
+            float attenuationChange = fwidth(atten);
+            float shadow = smoothstep(0, attenuationChange, atten);
+            #endif
+            half4 c;
+            c.rgb = (ambient + diff + specular) * atten * s.Albedo;
+            c.a = s.Alpha;
+            return c;
+        }
+
+        struct Input
+        {
+            float2 uv_MainTex;
+        };
+
+        sampler2D _MainTex;
+
+        void surf(Input IN, inout SurfaceOutput o)
+        {
+            o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+        }
+        ENDCG
+    }
+    FallBack "Diffuse"
+}
+```
+
+# 3. Other effects in Toon shader
+
+## 3.1 Light turbulance
+
+To enable a light turbulance for a torch, the trick is to add as offset for the lightDir
+
+```glsl
+float3 shakeOffset = float3(0, 0, 0);
+shakeOffset.x = sin(_Time.z * 15);
+shakeOffset.y = sin(_Time.z * 13 + 5);
+shakeOffset.z = sin(_Time.z * 12 + 7);
+
+#ifdef POINT
+lightDir += shakeOffset * 0.1f;
+#endif
+```
+<br></br>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/toon-shader/LightTurbulance.gif" width = "50%" alt="Assets"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 3 LightTurbulance
+  	</div>
+</left>
+
+## 3.2 Hair specular
+
+Kajiya-Kay Shading Model
+
+## 3.3 With multiple lights
+
+There is another way to add multiple lights. By default, the Unity light system only supports four light sources. But we can add lights manually to make sure that every light has been calculate throw for shadow casting.
+
+First there should be a LitTag to mark which light we want to take count.
+
+```glsl
+public class MultiLitsTag:MonoBehaviour
+{
+    public float shakeStrength = 0.5f;
+    public int litSorting = 0;
+}
+```
+
+Then generate a multilights container, and send the following message to shader:
+
+(float4)_LitPosList: xyz is the world position, z can be another light perticular factor
+
+(float4)_LitColList:xyz is the light color, w is the light range
+
+```glsl
+public class MultiLitsContainer : MonoBehaviour
+{
+    [SerializeField] private Transform[] pointLits;
+
+    private Light[] _pointLightList;
+
+    private MultiLitsTag[] _lightTagList;
+    // Start is called before the first frame update
+    void Awake()
+    {
+        _pointLightList = new Light[pointLits.Length];
+        _lightTagList = new MultiLitsTag[pointLits.Length];
+        for (int i = 0; i < pointLits.Length; i++)
+        {
+            _pointLightList[i] = pointLits[i].GetComponent<Light>();
+            _lightTagList[i]=pointLits[i].GetComponent<MultiLitsTag>();
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Vector4[] litPosList = new Vector4[10];
+        Vector4[] litColList = new Vector4[10];
+
+        for (int i = 0; i < pointLits.Length; i++)
+        {
+            litPosList[i] = new Vector4(pointLits[i].position.x,pointLits[i].position.y,pointLits[i].position.z,_lightTagList[i].shakeStrength);
+            litColList[i] = new Vector4(_pointLightList[i].color.r,_pointLightList[i].color.g,_pointLightList[i].color.b,_pointLightList[i].range);
+        }
+        Shader.SetGlobalFloat("_LitCount",pointLits.Length);
+        Shader.SetGlobalVectorArray("_LitPosList",litPosList);
+        Shader.SetGlobalVectorArray("_LitColList",litColList);
+    }
+}
+```
+
+ And the shader would be as following
+
+```glsl
+Shader "Toon/ToonMultipleLightShader"
+{
+    Properties
+    {
+        _Tint("Tint",Color)=(1,1,1,1)
+        _MainTex ("Texture", 2D) = "white" {}
+        _UnlitColor("Shadow Color",Color)=(0.5,0.5,0.5,1)
+        _MultiListFadeDistance("MultiList FadeDistance",Float)=20
+        
+        _RimColor("Rim Color",Color)=(0.5,0.5,0.5,1)
+        _RimLightSampler ("RimLight Sampler", 2D) = "white" {}
+        _RimIntensity("Rim Intensity",Float)=10
+        _UnlitThreshold("Shadow Range",Range(0,1))=0.1
+    }
+    SubShader
+    {
+        Tags
+        {
+            "Queue"="Geometry" "RenderType"="Opaque"
+        }
+        LOD 100
+
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+
+            #pragma multi_compile_fwdbase
+            #include "AutoLight.cginc"
+            #include "UnityLightingCommon.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos:SV_POSITION;
+                float4 posWorld:TEXCOORD0;
+                float3 normal:TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                float3 camDir: TEXCOORD3;
+                float3 lightDir: TEXCOORD4;
+                LIGHTING_COORDS(5, 6)
+            };
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed4 _Tint;
+            fixed4 _UnlitColor;
+            
+            float _UnlitThreshold;
+            float _MultiListFadeDistance;
+
+            fixed4 _RimColor;
+            sampler2D _RimLightSampler;
+            float _RimIntensity;
+
+            float _LitCount;
+            float4 _LitPosList[10];
+            float4 _LitColList[10];
+
+            v2f vert(appdata v)
+            {
+                v2f o;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.posWorld = mul(unity_ObjectToWorld, v.vertex);
+                o.normal = UnityObjectToWorldNormal(v.normal);
+                o.camDir = normalize(_WorldSpaceCameraPos - o.posWorld);
+                o.lightDir = WorldSpaceLightDir(v.vertex);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                // sample the texture
+                fixed4 col = tex2D(_MainTex, i.uv) * _Tint;
+
+                //add fire shake effect
+                fixed4 pointLitCol = fixed4(0, 0, 0, 0);
+                fixed pointLit = 0;
+                float3 shakeOffset = float3(0, 0, 0);
+                shakeOffset.x = sin(_Time.z * 15);
+                shakeOffset.y = sin(_Time.z * 13+5);
+                shakeOffset.z = sin(_Time.z * 12+7);
+
+                for (int n = 0; n < _LitCount; n++)
+                {
+                    float litDist = distance(_LitPosList[n].xyz, i.posWorld.xyz);
+                    float viewDist = distance(_LitPosList[n].xyz, _WorldSpaceCameraPos);
+                    float viewFade = 1 - saturate(viewDist / _MultiListFadeDistance);
+                    if (litDist < _MultiListFadeDistance)
+                    {
+                        float3 litDir = _LitPosList[n].xyz - i.posWorld.xyz;
+                        litDir += shakeOffset * 0.07 * _LitPosList[n].w;
+                        litDir = normalize(litDir);
+                        fixed newlitValue = max(0, dot(i.normal, litDir)) * (_LitPosList[n].w - litDist) * viewFade >
+                            0.3;
+                        fixed4 newlitCol = newlitValue * fixed4(_LitColList[n].xyz, 1);
+                        pointLitCol = lerp(pointLitCol, newlitCol, newlitValue);
+                    }
+                }
+                
+                //light and shadow
+                float3 normalDirection = normalize(i.normal);
+                float attenuation = LIGHT_ATTENUATION(i);
+                float3 lightDirection = normalize(_WorldSpaceLightPos0).xyz;
+                fixed3 lightColor = _Tint.rgb * _UnlitColor.rgb * _LightColor0.rgb;
+                if (attenuation * max(0.0, dot(normalDirection, lightDirection)) >= _UnlitThreshold)
+                {
+                    lightColor = _LightColor0.rgb * _Tint.rgb;
+                }
+
+                //Rimlight
+                float normalDotCam = dot(i.normal, i.camDir.xyz);
+                float falloffU = clamp(1.0 - abs(normalDotCam), 0.02, 0.98);
+
+                float rimlightDot = saturate(0.5 * (dot(i.normal, i.lightDir + float3(-1, 0, 0)) + 1.5));
+                falloffU = saturate(rimlightDot * falloffU);
+                falloffU = tex2D(_RimLightSampler, float2(falloffU, 0.25f)).r;
+                float3 rimCol = falloffU * col * _RimColor * _RimIntensity;
+
+                return float4(col.rgb * (lightColor.rgb + pointLitCol) + rimCol, 1.0);
+            }
+            ENDCG
+        }
+    }
+    Fallback "VertexLit"
+}
+```
+<br></br>
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/toon-shader/multilight.png" width = "50%" alt="Assets"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 4 Multiple light toon shader
+  	</div>
+</left>
+
+
+# Reference
+
+[https://sorumi.xyz/posts/unity-toon-shader/](https://sorumi.xyz/posts/unity-toon-shader/)
+
+[https://blog.csdn.net/QO_GQ/article/details/119616656](https://blog.csdn.net/QO_GQ/article/details/119616656)
+
+[https://blog.csdn.net/csuyuanxing/article/details/123519895](https://blog.csdn.net/csuyuanxing/article/details/123519895)
+
+[https://www.cnblogs.com/littleperilla/p/15759993.html](https://www.cnblogs.com/littleperilla/p/15759993.html)
+
+[https://roystan.net/articles/toon-shader/](https://roystan.net/articles/toon-shader/)
+
+[https://www.ronja-tutorials.com/post/032-improved-toon/](https://www.ronja-tutorials.com/post/032-improved-toon/)
+
+[http://walkingfat.com/《塞尔达-荒野之息》中角色受多个点光源影响做法/](http://walkingfat.com/%E3%80%8A%E5%A1%9E%E5%B0%94%E8%BE%BE-%E8%8D%92%E9%87%8E%E4%B9%8B%E6%81%AF%E3%80%8B%E4%B8%AD%E8%A7%92%E8%89%B2%E5%8F%97%E5%A4%9A%E4%B8%AA%E7%82%B9%E5%85%89%E6%BA%90%E5%BD%B1%E5%93%8D%E5%81%9A%E6%B3%95/)
+
+[http://tuyg.top/archives/876](http://tuyg.top/archives/876)
+
+[https://docs.unity3d.com/Manual/SL-SurfaceShaderLightingExamples.html](https://docs.unity3d.com/Manual/SL-SurfaceShaderLightingExamples.html)
