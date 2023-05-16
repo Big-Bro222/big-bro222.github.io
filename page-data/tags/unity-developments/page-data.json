@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/unity-developments",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/toon-shader","title":"Toon Shaders","date":"03.02.2023","excerpt":"Toon shading  (often called  cel shading ) is a rendering style designed to make 3D surfaces emulate 2D, flat surfaces. This is a kind of…","timeToRead":2,"description":"thing learnt when implementing toon Shaders","tags":[{"name":"Unity developments","slug":"unity-developments"},{"name":"Shader Effects","slug":"shader-effects"},{"name":"Graphics","slug":"graphics"}]}]}},"pageContext":{"slug":"unity-developments","name":"Unity developments","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
