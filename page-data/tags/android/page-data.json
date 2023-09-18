@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tag-query-tsx",
+    "path": "/tags/android",
+    "result": {"data":{"allPost":{"nodes":[{"slug":"/blog/adb","title":"ADB Debug","date":"12.03.2023","excerpt":" ADB Debug This is a record for understanding some of the ADB command that could be useful for ADB debugging: Package interaction Activity…","timeToRead":1,"description":"Several useful ADB commands that might be useful","tags":[{"name":"Android","slug":"android"}]}]}},"pageContext":{"slug":"android","name":"Android","formatString":"DD.MM.YYYY"}},
+    "staticQueryHashes": ["2744905544","3090400250","318001574"]}
