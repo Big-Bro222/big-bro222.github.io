@@ -1,0 +1,89 @@
+---
+title: "ADB Debug"
+description: Several useful ADB commands that might be useful
+date: 2023-03-12
+slug: "/blog/adb"
+tags:
+  - Android
+---
+
+ ADB Debug
+
+This is a record for understanding some of the ADB command that could be useful for ADB debugging:
+
+```csharp
+adb connect 127.0.0.1: (Device portal)
+
+adb devices (check the current connection status)
+
+adb shell ：use linux command for operation, after adb shell, we will be entering adb shell and operate as linux command（In Android shell , we can use "exit" command to exit）
+
+adb install [path]
+
+adb uninstall [package name]：
+```
+
+## Package interaction
+
+```csharp
+
+adb shell pm list package (list all the package installed in the device)
+adb shell pm list packages -s (list all system package installed in the device）
+adb shell pm list package -3 (list all third-party package installed in the device）
+
+Explanation: use adb shell go to the inner linux system and call the pm function: which is the pm script inside the system/bin
+
+```
+
+## Activity interaction
+
+```csharp
+To start the application, you will need to active the "start" activity to accomplish that.
+(Here activity refers to a component in Android development)(https://developer.android.com/guide/components/activities/intro-activities)
+
+adb shell am start -W -S [Package name]/[activity to start the application]
+adb shell am force-stop com.tenda.smarthome.app (force stop application)
+
+adb pull [Android path][Computer path] （Download Android file to PC）
+adb exec-out screencap -p > sc.png  (ScreenShot to save on PC)
+adb shell screenrecord /sdcard/filename.mp4  (Screen recording, Ctrl+c can end the screen recording, default is 180s)
+
+adp push[Computer path][Android path] (Upload PC file to Android)
+```
+
+## Open Current Activity interface
+
+```csharp
+adb shell dumpsys activity|findstr “mFocuse”
+
+adb shell monkey -p [package name] -v-v -v1 
+
+     通过查看日志信息中，找到using开头的那一句，其中的activity名字就是启动界面
+
+adb 使用 sdk 中的aapt工具来进行apk包的解析  
+```
+
+## Input
+
+```csharp
+adb shell input text [content]
+
+adb shell input tap [x，y]
+
+adb shell input keyevent [keycode]
+
+adb shell input swipe [startingX startingY endX endY operationTime(s)] (Long press is simulated by a short-distance&long-duration press)
+adb shell input keyevent --longpress 26 (also long press event)
+
+By wrting these operation into a text and write as a bat file could implement a very simple auto test script!
+```
+
+# Reference
+
+[https://developer.android.com/tools/adb](https://developer.android.com/tools/adb)
+
+[https://developer.android.com/guide/components/activities/intro-activities](https://developer.android.com/guide/components/activities/intro-activities)
+
+[https://www.cnblogs.com/lihongtaoya/p/17553171.html](https://www.cnblogs.com/lihongtaoya/p/17553171.html)
+
+[https://hiyongz.github.io/posts/appium-adb/](https://hiyongz.github.io/posts/appium-adb/)
