@@ -1,0 +1,368 @@
+---
+title: "UPM custom Scope Registery-(Google Cloud)"
+description: Several useful ADB commands that might be useful
+date: 2023-06-20
+slug: "/blog/UPMScopeRegistory"
+tags:
+  - Unity development
+  - Code management and collaboration 
+---
+
+
+A while ago Unity introduced its [Package Manager](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@1.8/manual/index.html), a nice and simple way to bring reusable packages into a project while keeping track of dependencies and compatible Unity versions.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/package_overview.png" width = "50%" alt="package_overview.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 1 Package manager overview
+  	</div>
+</left>
+
+How great would it be if we could use this system for our own reusable assets, if we could store them on our own server ****and have them show up in the package manager too?
+
+Well, as it turns out we can**! ***(since Unity 2018.3+)*
+
+Unity is using a normal *npm package server* to serve their packages. So we can simply set up our own npm package server, hook it into the project manifest, and have the package manager serve our own packages in addition to the ones from Unity!
+
+Unity is using [Artifactory](https://jfrog.com/artifactory/), but we’re going to install [Verdaccio](https://verdaccio.org/en/) (a lightweight and free npm registry server)! We’ll put it on a ***Micro* Instance** on the **Google** **Cloud Compute Engine** (but you could just as well have it run in any other cloud, on your ↗️ [local NAS](https://markus.hofer.rocks/s/dfb006f522964df1a3633ef98341ac9e), or even on your local PC). Let me walk you through it…
+
+# 1. Creating a server instance
+
+Go to your [Google Cloud Platform Console](https://console.cloud.google.com/home/dashboard), choose *Compute Engine* > *[VM Instances](https://console.cloud.google.com/compute/instances),* and click on *CREATE INSTANCE.*
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/VM_Instance.png" width = "50%" alt="VM_Instance.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 2 Create a VM instance
+  	</div>
+</left>
+
+Give it a *name*, choose a *region*, select *micro* as the machine type, and click *Create* to create your Debian 9 Linux Server with 10GB of storage. Notice how it estimates the monthly cost as $4.28 - and that’s indeed pretty close to what I’m paying for it per month. With our instance created and running, we’ll now connect to it by clicking on *SSH.*
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/VM_Instance_Detial.png" width = "50%" alt="VM_Instance_Detial.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 3 Connect to your new instance
+  	</div>
+</left>
+
+This will open up a Linux terminal in a browser window
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/Linux_VM.png" width = "50%" alt="Linux_VM.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 4 This is how we talk to our Debian Linux server
+  	</div>
+</left>
+
+
+# 2. Installing and Configuring Verdaccio Prerequisites
+
+## 2.1 Install node js and npm
+
+Now we’ll install or own package server, Verdaccio. We want to do this as the root user, so we’re going to create a password for the root:`$ sudo passwd`Think of a password and enter it. And enter it again. Now log in as the root (su = superuser = root):`$ su`It asks for the password you just set, enter it and you should now be logged in as the root user! Next, we’ll install NodeJS and npm (the node package manager)
+
+`$ curl -sL https://deb.nodesource.com/setup_18.x | bash -`
+
+`$ apt-get install -y nodejs`
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/node_npm.png" width = "50%" alt="node_npm.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 5 nodejs and npm are installed!
+  	</div>
+</left>
+
+
+
+For both these steps you’ll see it installing things, no errors should come up. To verify that both node js and npm are installed correctly you can check their versions like this:
+
+`$ node -v`
+
+`$ npm -v`
+
+If each command shows you a version, then it worked!
+
+## 2.2 Installing Verdaccio
+
+Now we’re ready to install Verdaccio!
+
+`$ npm install --global verdaccio`
+
+Let it install. Once it’s done switch back out of super-user mode by either pressing **CTRL+D** or typing exit, because while we wanted to *install* it as the root user, we want to *run* it as a normal user.
+
+We’ll configure it in a second, but first, we need to run it to make sure it generates its config file.`$ verdaccio`Then press **CTRL+C** to kill it and we’re ready to change the **config** file!`$ cd verdaccio $ vim config.yaml`This opens the **config.yaml** file in the [VIM](https://www.howtoforge.com/vim-basics) text editor. All we need to do is add two lines to tell verdaccio to listen to all signals from everywhere as long as they come through port 4873:
+
+```csharp
+listen:
+   - 0.0.0.0:4873 
+```
+
+Press **`i`** for **insert**. Add the two lines, then press **ESC** to come back to command mode. Now type **`:x`** and press *Enter* to save the file and quit VIM.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/verdaccio_config.png" width = "50%" alt="verdaccio_config.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 6 Verdaccio Config 
+</left>
+
+Let’s run verdaccio!
+
+`$ verdaccio`
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/verdaccio_running.png" width = "50%" alt="verdaccio_running.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 7  Verdaccio Running
+  	</div>
+</left>
+
+Verdaccio is running on port 4873!
+
+## 2.3 Setting up Firewall
+
+Now we need to tell the firewall around our server instance to unblock port 4873 so we can communicate with Verdaccio from the outside! Go to the Google Cloud Platform Console > VPC network > [Firewall rules](https://console.cloud.google.com/networking/firewalls/list) and click *Create Firewall Rule.*
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/Firewall_rule.png" width = "50%" alt="Firewall_rule.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 8 Add a Rule to the Firewall
+  	</div>
+</left>
+
+We want to create a rule that allows incoming traffic (Ingress) from all possible IPs (**0.0.0.0/0**) for TCP port **4873.**
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/Firewall.png" width = "50%" alt="Firewall_rule.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 9 Firewall settings
+  	</div>
+</left>
+
+I marked the important bits in yellow. Turns out most of the bits were important…And we’re done installing! Verdaccio is running and accessible from the outside world! Point your web browser to **http://[your server’s IP]:4873** and you should see this:
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/verdaccio_running.png" width = "50%" alt="verdaccio_running.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 10 Verdaccio is running, but empty
+  	</div>
+</left>
+
+
+
+## **2.4** Keeping Verdaccio alive
+
+Nice! The only problem is: As soon as we close the console window, Verdaccio gets shut down**,** so we have to work around that with a little tool called **[screen](https://kb.iu.edu/d/acuy)!** (should be installed, if it’s not you can get it with *`sudo apt-get install screen`*) Press **`CTRL`+`C`** to kill Verdaccio and type`$ screen`
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/verdaccio_screen.png" width = "50%" alt="verdaccio_screen.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 11 Keep Verdaccio alive
+  	</div>
+</left>
+
+This opens up a new virtual *screen*, a kind of safe place, which is where we will now launch Verdaccio:`$ verdaccio`Then we simply press **`CTRL`+`A`** and **`CTRL`+`D`** to detach the screen session**.** It’s still running in the background with Verdaccio safe and sound inside it and we can even get back to it at any time by typing *`screen -r`*, but most importantly we can now close our terminal window without killing Verdaccio! Now we’re ready to create users, add packages, and hook it up into Unity!
+
+# 3. Creating a user
+
+Let’s open PowerShell (or something similar) on our local machine and create a user! (You’ll need npm for this — if it’s not installed you can get the installer [here](https://www.npmjs.com/get-npm) — remember how to check if it’s installed? Works here too!) 
+
+`npm adduser --registry http://[Server IP]:4873`
+
+Enter a username, password, and email address and you should be created and logged in!
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/create_username.png" width = "50%" alt="create_username.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 12 Create a user
+  	</div>
+</left>
+
+User created! Later on, you can log back in with 
+
+`npm login --registry http://[Server IP]:4873`
+
+# 4. Creating and uploading packages
+
+The process for this is simple: Put all the files into a folder, add a **package.json** file that holds all the relevant information, and upload everything via npm! I recommend having that folder in a Unity project because the resulting package will not work if a meta file is missing, and having it inside Unity makes it easy for you to see if everything is in order. Let’s add a  file to the root of the folder that looks like this: for a package without dependencies. Note how you can define a required unity version, description, and [other things](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@1.8/manual/index.html#PackManManifestsProject). You could even add a README.md file. You also need to have **[assembly definition files](https://markus.hofer.rocks/s/b20f0efd4bf34b358b2ddb869e6378d0)** in there or it will not compile (as the actual files will reside outside the Assets folder), so make sure those are set up correctly! 
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/package_overview.png" width = "50%" alt="package_overview.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 13 A package example
+  	</div>
+</left>
+
+Your final folder could look like this. Once it’s all set, go to the folder you want to publish in PowerShell and do:
+
+ `npm publish --registry http://[Server-IP]:4873`
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/npm_publish.png" width = "50%" alt="npm_publish.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 14 To publish npm package
+  	</div>
+</left>
+
+npm and verdaccio will do the rest and your package will now be visible on verdaccio’s web interface!
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/Verdaccio_interface.png" width = "50%" alt="Verdaccio_interface.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 15 Package uploaded!
+  	</div>
+</left>
+
+### Updates
+
+If you want to release an update to your package, simply increase the version in your *package.json* file and publish the same way! Verdaccio will keep the entire history of your packages so dependencies will always bring in a compatible version.
+
+### Unpublish (remove) a package from the server
+
+You can get rid of packages too. This will remove all versions and get rid of the package entirely:
+
+`npm unpublish --force at.blackish.testpackage --registry http://125.138.25.12:4873`
+
+# 5. Setup scope registry in Packages
+
+Now there’s only one last thing to do: Get the Package Manager to talk to Verdaccio ****and show our custom packages!  And you can hook it up in the Editor>Project Setting>Package Manager, and you can also define the scope to get access to different categories.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/scope_registry.png" width = "50%" alt="scope_registry.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 16 Unity Scope registry
+  	</div>
+</left>
+
+# 6. Restricting access
+
+At the moment everyone who knows the IP address of our server can *create* users, *get* packages, *add* packages and even *delete* packages. That’s not exactly ideal. I should probably look into that…Just kidding, I *did* look into that. The simplest way to at least stop everyone from uploading and deleting packages is to *restrict registration*. Once all your users have registered you can simply set **max_users: -1** in the *config* file and no one can register anymore. *All your user data is stored in the **htpasswd** file, so you could even set up all users by hand (tools like [this one](http://www.htaccesstools.com/htpasswd-generator/) can help you md5-hash your passwords) and having registration disabled from the start.*
+
+### Reserve a static IP address
+
+The way we have set it up the external IP address of our server instance changes every time we stop and start the server. We don’t plan to do this very often, but it might still be a good idea to go to VPC network > [External IP addresses](https://console.cloud.google.com/networking/addresses/list) and switch the type of our IP address from *Ephemeral* to **Static**.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/reserve_static_ip.png" width = "50%" alt="reserve_static_ip.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 17 Reserve static IP
+  	</div>
+</left>
+
+Google is only charging for reserved IP addresses that are not in use, so if you have your server running continuously, it should not add any extra cost. But if it’s not in use the reserved IP will cost $0.010 per hour — almost twice as much as the $0.006 per hour it costs to run our micro instance. Keep that in mind…
+
+### Remove Uplinks
+
+[Uplinks](https://verdaccio.org/docs/en/uplinks) are a way to connect Verdaccio to other npm registries. If a package is not found on your server it would then look in those other places and potentially cache it locally. This feature has potential, but I’m pretty sure we don’t want our server to look for unity packages on the npmjs registry, so let’s comment that out for now:
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/upm-custom-scope-registory/remove_uplink.png" width = "50%" alt="remove_uplink.png"/>
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;">
+    Figure 18 Little use looking for unity packages on the npmjs registry…
+  	</div>
+</left>
+
+
+
+Apart from that, You can also set up a CI for package management. Here is a [link](https://verdaccio.org/docs/github-actions/) for GitHub Action for Verdaccio. I am still work on that, might write a blog about that in the near future.
+
+# Reference
+
+[https://docs.github.com/en/actions](https://docs.github.com/en/actions)
+
+[https://verdaccio.org/](https://verdaccio.org/)
+
+[https://verdaccio.org/docs/github-actions/](https://verdaccio.org/docs/github-actions/)
+
+[ https://markus.hofer.rocks/package-server-google-cloud]( https://markus.hofer.rocks/package-server-google-cloud)
+
