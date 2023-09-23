@@ -1,0 +1,76 @@
+---
+title: "Unity Life Cycle related to Mobile platform"
+description: Unity Life Cycle related to Mobile platform
+date: 2022-12-12
+slug: "/blog/unity-mobile-lifecycle"
+tags:
+  - Android
+  - Unity development
+---
+
+Note that all these note， is also avaliable on Android-based VR devices. Be used for event tracking service
+
+```csharp
+//Application goes to background pause = true 
+//Application goes to front pause = false
+void OnApplicationPause(bool pause){
+if(pause)
+{
+    //Switch to background
+}
+else
+{
+    //Switch to front
+}
+}
+```
+
+```csharp
+
+//Application goes to background focus = false 
+//Application goes to front focus = true
+void OnApplicationFocus(bool focus){
+   if(focus)
+   {
+     //when the application is in focus
+   }
+   else
+   {
+     //when the applicaiton is running on the background
+   }
+}
+```
+
+# Different Usage
+
+```csharp
+//Start the App:
+OnApplicationFocus, isFocus=True
+
+//Quit the App:
+OnApplicationQuit
+
+//Get out by pressing home：
+OnApplicationPause, isPause=True
+OnApplicationFocus, isFocus=False
+
+//Go in with home
+OnApplicationPause, isPause=False
+OnApplicationFocus, _isFocus=True
+
+//Kill the process：
+
+////Double press Home，and Kill：
+OnApplicationQuit  (IOS called，android not called)
+
+////Get out of home first and kill from background
+OnApplicationQuit  (IOS and Android not called)
+
+////OnApplicationQuit will always be called when application.quit is called
+```
+
+# Reference
+
+[https://blog.csdn.net/shuangkui5355/article/details/80358079](https://blog.csdn.net/shuangkui5355/article/details/80358079)
+
+[https://dev.to/kento/unity-a-solution-if-you-cant-receive-the-event-that-finishes-an-app-on-mobile-4n2d](https://dev.to/kento/unity-a-solution-if-you-cant-receive-the-event-that-finishes-an-app-on-mobile-4n2d)
