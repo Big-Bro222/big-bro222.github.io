@@ -1,0 +1,72 @@
+---
+title: "Unity Merge tool set-up(Sourcetree + UnityYAMLMerge)"
+description: Steps to setup smart merge for sourcetree
+date: 2022-11-02
+slug: "/blog/unity-merge-sourcetree"
+tags:
+  - Unity development
+  - Code management and collaboration
+---
+
+## Purpose
+
+If Sourcetree isn't configured with the Unity merge tool, you will get merge conflicts every time two contributors change anything in the same scene even though the changes are compatible. This implies that you have to chose between either the source or the destination and someone has to redo all their work. Hopefully Unity provides with a merge tool that avoid going through these troubles.&#x20;
+
+## Set up
+
+ 1. Find the location where you installed Unity.
+
+ 2. In Sourcetree, go to "Tools" → "Options" and tick this box if it isn't the case already :&#x20;
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-merge-sourcetree/Tab.png" width = "80%" alt="Tab.png"/>
+    <br>
+</left>
+
+ 3. Go in the "Diff" tab
+
+      - Set the *Merge Tool* to → **Custom**
+      - Set the *Merge Command* to → `'YOUR_PATH_TO_UNITY'\Editor\'ANY_VERSION_OF_UNITY'\Editor\Data\Tools\UnityYAMLMerge.exe` For example `D:\Unity\Editor\2020.1.12f1\Editor\Data\Tools\UnityYAMLMerge.exe`
+      - Set the *Arguments*  to → `merge -p $BASE $REMOTE $LOCAL $MERGED`
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-merge-sourcetree/Option.png" width = "80%" alt="Option.png"/>
+    <br>
+</left>
+
+4. Enter your passphrase to validate the settings.
+
+5. Download [P4Merge](https://www.perforce.com/downloads/visual-merge-tool "Download Helix Visual Merge Tool Today | Perforce"), usually your platform is Windows x64. You'll be asked to register but you don't have to, click the button "Skip Registration" on top of the pop-up.
+
+6. Launch the installer and make sure to only tick p4merge, you can also pick the path that you want for this (You'll need to know the path for further steps): You can then click next until the installation is done.
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-merge-sourcetree/P4Diff.png" width = "50%" alt="P4Diff.png"/>
+    <br>
+</left>
+
+7. Open the file "mergespecfile" ==as an administrator== located at the exact same path than the "UnityYAML.exe" in the step 3.2
+
+8. Find the lines starting with "unity use" and "prefab use" and replace them with :
+
+- unity use "%programs%\Perforce\p4merge" "%b" "%r" "%l" "%d"
+- prefab use "%programs%\Perforce\p4merge" "%b" "%r" "%l" "%d"
+ 
+ Where %programs% is the path leading to where you installed p4merge in step 6 ;
+
+9. You might still encounter some merge conflicts in certain configurations, but you can easily solve them by using the external merge tool you just configured: Right Click → Resolve Conflicts → Launch External Merge Tool
+
+<left>
+    <img style="border-radius: 0.1125em;
+    box-shadow: 0 2px 1px 0 rgba(34,36,38,.12),0 2px 5px 0 rgba(34,36,38,.08);" 
+    src="https://cdn.jsdelivr.net/gh/Big-Bro222/StaticFileServer/big-bro222.github.io/posts/unity-merge-sourcetree/Merge.png" width = "80%" alt="Merge.png"/>
+    <br>
+</left>
+
+You might have to wait a bit until the conflicts are resolved as the files are big, but it should be solved in the end.
