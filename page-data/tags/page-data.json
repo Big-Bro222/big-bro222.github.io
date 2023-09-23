@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---node-modules-lekoarts-gatsby-theme-minimal-blog-core-src-templates-tags-query-tsx",
     "path": "/tags",
-    "result": {"data":{"allPost":{"group":[{"fieldValue":"AR/VR","totalCount":5},{"fieldValue":"Android","totalCount":1},{"fieldValue":"C# basics","totalCount":5},{"fieldValue":"Code management and collaboration","totalCount":5},{"fieldValue":"Design Pattern","totalCount":2},{"fieldValue":"Graphics","totalCount":1},{"fieldValue":"Project experience","totalCount":3},{"fieldValue":"Shader Effects","totalCount":1},{"fieldValue":"Unity development","totalCount":9}]}},"pageContext":{}},
+    "result": {"data":{"allPost":{"group":[{"fieldValue":"AR/VR","totalCount":5},{"fieldValue":"Android","totalCount":2},{"fieldValue":"C# basics","totalCount":5},{"fieldValue":"Code management and collaboration","totalCount":5},{"fieldValue":"Design Pattern","totalCount":2},{"fieldValue":"Graphics","totalCount":1},{"fieldValue":"Project experience","totalCount":3},{"fieldValue":"Shader Effects","totalCount":1},{"fieldValue":"Unity development","totalCount":10}]}},"pageContext":{}},
     "staticQueryHashes": ["2744905544","3090400250","318001574"]}
