@@ -1,0 +1,349 @@
+---
+title: "C# coding Standard"
+description: some rules that I found useful when doing C# programming
+date: 2023-06-21
+slug: "/blog/csahrp-codingstandard"
+tags:
+  - Code management and collaboration
+---
+
+Here is something I found useful while collaborate with others which creates easy-to-read, high quality codes.
+
+## Classes & Interfaces
+
+- Written in **PascalCase**
+- If it's a class that interacts with other classes, use names ending in -er (2)
+
+Example:
+
+```csharp
+SwitchButton
+ButtonSwitcher
+```
+
+## Methods
+
+- Written in **PascalCase**
+- Needs to start with a **verb** e.g. Do, Change, Swap, Process
+
+Example:
+
+```csharp
+DoSomething()
+```
+
+## Fields
+
+- Public fields are written in **PascalCase**
+- Private and protected are written in **camelCase** with m_ before them (\_ is also ok, but if you consider writting in C++ as well, m_ is a better practice, because C++ don't accept such typing)
+
+Example:
+
+```csharp
+public class MyClass {
+	 public int PublicField;
+    private int m_privateField;
+    protected int m_protectedField;
+}
+```
+
+## Parameters
+
+- Parameters are written in **camelCase**
+
+Example:
+
+```csharp
+void DoSomething(Vector3 location)
+```
+
+## Constants
+
+- Are written with capital letters, separated by underscore
+
+Example:
+
+```csharp
+private const float FADE_EFFECT_MINIMUM_DISTANCE = 0.075f;
+```
+
+# Declarations
+
+## Access Level Modifiers
+
+Access level modifiers should be explicitly defined for classes, methods and member variables (public, private, protected).
+
+**Note** this is usually only an issue for the private modifier, since that field can be omitted.
+
+Example:
+
+```csharp
+private void Update() {
+}
+```
+
+## Fields & Variables
+
+- Prefer single declaration per line, sometimes logically grouping fields can be useful but this should be the exception
+
+**Usually bad**
+
+```csharp
+string username, twitterHandle;
+```
+
+&#x20;**Usually good**
+
+```csharp
+string username;
+string twitterHandle;
+```
+
+Creating a Serializable class to group variables in logic chunks can be useful to reduce clutter in inspector and logically group sets of variables as one unit.
+
+## Events
+
+Name events so it's clear when they are invoked: OnTargetReached, OnObjectRotated, OnSessionCompleted.
+
+Notice how it's often useful to name events in the past tense to show exactly when the event is invoked.
+
+## Classes
+
+Exactly one class per source file, although inner classes are encouraged where scoping is appropriate.
+
+## Interfaces
+
+- All interfaces should be prefaced with the letter I
+
+**Bad**
+
+```
+RadialSlider
+```
+
+**Good**
+
+```csharp
+IRadialSlider
+```
+
+# Spacing
+
+Spacing is especially important in the code, as the code needs to be easily readable for all team members.
+
+## Line Length
+
+Lines should be no longer than 130 characters long.
+
+## Vertical Spacing
+
+Try to separate variable declaration, method calling and other functionalities in groups inside the same method. If there are many groups, probably they need to be split up in different methods.
+
+# Brace Style&#x20;
+
+**Good**
+
+```csharp
+class ABC
+{
+	void doSomething()
+    {
+    }
+ }
+```
+
+Since this is the brace style in most C# projects and also recommended in Microsoft's own code convention guide.
+
+**Bad**
+
+```csharp
+class ABC {
+  void DoSomething() {
+  }
+}
+```
+
+**Switch Statements**
+
+Try to use the pattern match switch when possible, since it reduces boilerplate and prevents common pitfalls of regular switches like code execution falling through one branch into the next.
+
+```csharp
+command switch
+{
+    "SystemTest" => RunDiagnostics(),
+    "Start" => StartSystem(),
+    "Stop" => StopSystem(),
+    "Reset" => ResetToReady(),
+    _ => throw new ArgumentException("Invalid string value for command", nameof(command)),
+};
+```
+
+```csharp
+switch (something)
+{
+  case A:
+    break;
+  case B:
+    break;
+}
+```
+
+# Code Structure
+
+**General**:
+
+- Try to separate different functionalities with return
+- Try to group different functionalities together. E.g. transforms (position, rotation);&#x20;
+- Try to early exit at top of the function when conditions required for the function to operate are not met
+
+## Example
+
+**Good**
+
+```csharp
+private float DivideNumbers(float a, float b)
+{
+	if (b == 0) { return 0; }
+    return a / b;
+}
+```
+
+Bad
+
+```csharp
+private float DivideNumbers(float a, float b)
+{
+	if (b != 0)
+	{
+    	return a / b;
+    }
+    
+    return 0;
+}
+```
+
+By using **return** statements when the code needs to stop, we can prevent right code indentation.
+
+## Important notes
+
+**Public / Private / HiddenInInspector**
+
+In some cases, we might need to expose public variables from the class. Though, we don't want to provide them visibility in the inspector (because this might create confusion such as "should I put something in this empty field?"). In this case, there are 2 ways of solving it:
+
+```csharp
+[HideInInspector]
+public int TheValue;
+```
+
+```csharp
+public int TheValue { get; set; }
+public int TheOtherValue { get; private set; }
+```
+
+The 2nd is preferred. In special cases like this, these two should be kept together and placed with public variables. If you only want to expose a getter the 3rd option is the best.
+
+⚠️ **Warning**: when serializing JSON classes, some variable declarations do not work, essentially you should think of properties more as methods than variables.
+
+Works:
+
+```csharp
+public int Number;
+```
+
+Does not serialize:
+
+```csharp
+public int Number { get; set; }
+```
+
+## Attributes
+
+**General**
+
+Since it's better for cohesiveness and structure if all attributes follow the same convention, opt to put all attributes above the code they target - even if it's a class or a variable. This way there's less clutter in diffs if someone needs to add more attributes, and we don't have to worry about readability or total line length when adding attributes.\
+\
+**Bad**
+
+```csharp
+[SerializeField, HideInInspector] private bool _myField;
+```
+
+**Good**
+
+```csharp
+[CustomPropertyDrawer(typeof(MyClass)]
+public class MyClassPropertyDrawer : PropertyDrawer
+
+[SerializeField, HideInInspector]
+private bool _myField;
+```
+
+## Class Structure
+
+```cpp
+/// Description for the class
+class ExampleClass
+{
+
+	// Constants.
+	private const float TIME_OF_DELAY_IN_SECONDS = 0.5f;
+
+	// Child classes.
+	private class KeyPairValue
+	{
+    	public string Key;
+    	public string Value;
+	}
+
+	// Child enums.
+	private enum OptionsEnum
+	{
+    	OptionOne,
+    	OptionTwo,
+    	OptionThree
+	}
+
+	// Public variables.
+	public int Number;
+	public int Count;
+
+	// Private/protected, which are exposed into the editor.
+	[SerializeField]
+	private float _secondsToStart;
+	[SerializeField]
+	protected string _debugText;
+
+	// Private/protected, not exposed in the editor.
+	private string _translationForName;
+
+	// Unity default methods.
+	private void Awake()
+	{
+	}
+
+	private void OnEnable()
+	{
+	}
+
+	// Public custom methods.
+	public void SetData(string newData)
+	{
+	}
+
+	// Private/protected methods.
+	private void CalculateRange()
+	{
+	}
+
+	// Callbacks.
+	private void OnButtonPressed()
+	{
+	}
+
+	private void OnEventTriggered()
+	{
+	}
+}
+```
+
+**Note**: there are exceptions, for example, it is more important that the initialization sequence is one after the other even if some methods are private.
