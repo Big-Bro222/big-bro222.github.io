@@ -78,6 +78,49 @@ adb shell input keyevent --longpress 26 (also long press event)
 By wrting these operation into a text and write as a bat file could implement a very simple auto test script!
 ```
 
+## Settings for Quest 2 : 16:9
+
+```
+adb shell setprop debug.oculus.capture.width 1920
+adb shell setprop debug.oculus.capture.height 1080
+adb shell setprop debug.oculus.capture.bitrate 10000000
+adb shell setprop debug.oculus.foveation.level 0
+adb shell setprop debug.oculus.capture.fps 60
+```
+
+**Detailed instructions:**
+
+1. Download SideQuest and run it.
+2. Connect the headset to the computer.
+3. Allow permissions on the headset needed by the SideQuest
+4. In SideQuest click “ADB Commands” / "Custom commands"
+5. Run each of the following commands by typing them in one by one followed by clicking "run command" for each.
+
+   **THESE SETTINGS ARE FOR QUEST (1)**
+   1. adb shell setprop debug.oculus.capture.width 1280
+   2. adb shell setprop debug.oculus.capture.height 720
+   3. adb shell setprop debug.oculus.capture.bitrate 100000
+   4. adb shell setprop debug.oculus.foveation.level 0
+   5. adb shell setprop debug.oculus.capture.fps 60
+   6. Then when recording the video as usual from within the quest, the video will be created using those settings - i.e. not squared etc.
+6. Now - I experienced the output from the above recommended commands to be pixelated. After testing it out for a bit these commands worked best for me:
+   1. adb shell setprop debug.oculus.capture.width 1280
+   2. adb shell setprop debug.oculus.capture.height 720
+   3. adb shell setprop debug.oculus.capture.bitrate 5000000
+   4. adb shell setprop debug.oculus.foveation.level 0
+   5. adb shell setprop debug.oculus.capture.fps 60
+7. I did also try to use a higher resolution:
+   1. adb shell setprop debug.oculus.capture.width 1920
+   2. adb shell setprop debug.oculus.capture.height 1080
+8. NOTE: When the Quest is restarted the default settings will be automatically set so this would have to be done again.
+
+<br/>
+
+
+
+
+
+
 # Reference
 
 [https://developer.android.com/tools/adb](https://developer.android.com/tools/adb)
@@ -87,3 +130,7 @@ By wrting these operation into a text and write as a bat file could implement a 
 [https://www.cnblogs.com/lihongtaoya/p/17553171.html](https://www.cnblogs.com/lihongtaoya/p/17553171.html)
 
 [https://hiyongz.github.io/posts/appium-adb/](https://hiyongz.github.io/posts/appium-adb/)
+
+[How-to: Enable landscape screen recording & improve quality and resolution using ADB commands](https://www.reddit.com/r/OculusQuest/comments/ehdx6k/howto_enable_landscape_screen_recording_improve/ "r/OculusQuest - How-to: Enable landscape screen recording & improve quality and resolution using ADB commands")
+
+[TEST - Recording videos on quest with specific dimensions](https://youtu.be/krPX2rcsYx4 "TEST - Recording videos on quest with specific dimensions")
